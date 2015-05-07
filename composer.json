@@ -1,0 +1,22 @@
+{
+    "name": "noxlogic/serializer-bundle",
+    "description": "A serializer based on JMSSerializer",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joshua Thijssen",
+            "email": "jthijssen@noxlogic.nl"
+        }
+    ],
+    "require": {
+        "symfony/routing" : "*",
+        "doctrine/doctrine-bundle": "*"
+    },
+    "require-dev" : {
+        "pagerfanta/pagerfanta": "~1.0"
+    },
+    "autoload": {
+        "psr-0": { "Noxlogic\\SerializerBundle": "" }
+    },
+    "target-dir": "Noxlogic/SerializerBundle"
+}

@@ -1,0 +1,79 @@
+<?php
+
+namespace Noxlogic\SerializerBundle\Service\Collection;
+
+use Pagerfanta\Pagerfanta;
+
+/**
+ * @TODO: Make a nice wrapper around other pagination systems
+ */
+class PagerFantaWrapper
+{
+    /**
+     * @var Pagerfanta
+     */
+    protected $pager;
+    protected $routing;
+    protected $pageName;
+    protected $limitName;
+
+    public function __construct(Pagerfanta $pager, CollectionRouting $routing, $pageName = 'page', $limitName = 'limit')
+    {
+        $this->pager = $pager;
+        $this->routing = $routing;
+        $this->pageName = $pageName;
+        $this->limitName = $limitName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPager()
+    {
+        return $this->pager;
+    }
+
+    public function getTotal()
+    {
+        return $this->pager->getNbResults();
+    }
+
+    public function getPageCount()
+    {
+        return $this->pager->getNbPages();
+    }
+
+    public function getCurrentPage()
+    {
+        return $this->routing->generate(array(
+            $this->pageName => $this->pager->getCurrentPage(),
+            $this->limitName => $this->pager->getMaxPerPage(),
+        ));
+    }
+
+    public function hasPreviousPage()
+    {
+        return $this->pager->hasPreviousPage();
+    }
+
+    public function hasNextPage()
+    {
+        return $this->pager->hasNextPage();
+    }
+
+    public function getPreviousPage()
+    {
+        return $this->routing->generate(array(
+            $this->pageName => $this->pager->getPreviousPage(),
+            $this->limitName => $this->pager->getMaxPerPage(),
+        ));
+    }
+
+    public function getNextPage()
+    {
+        return $this->routing->generate(array(
+            $this->pageName => $this->pager->getNextPage(),
+            $this->limitName => $this->pager->getMaxPerPage(),
+        ));
+    }
+}
