@@ -131,7 +131,7 @@ class Serializer
 
         // Check if it exists
         if (!class_exists($className)) {
-            throw new InvalidArgumentException("Mapping $className does not exist");
+            throw new \InvalidArgumentException("Mapping $className does not exist");
         }
 
         // Check if the mapping class implements our needed interface
