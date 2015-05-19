@@ -113,6 +113,25 @@ class Serializer
         return $collection;
     }
 
+    public function serializeArray(array $elements, SerializerContext $context)
+    {
+        $collection = DataCollection::create();
+
+        $collection->addState('count', count($elements));
+        foreach ($elements as $item) {
+            // Don't treat array elements as collections
+            $inCollection = $context->isInCollection();
+            $context->setInCollection(false);
+
+            $element = $this->_serialize($item, $context, $this);
+            $collection->addElement($element);
+
+            $context->setInCollection($inCollection);
+        }
+
+        return $collection;
+    }
+
     /**
      * @param $element
      * @param SerializerContext $context
@@ -131,7 +150,7 @@ class Serializer
 
         // Check if it exists
         if (!class_exists($className)) {
-            throw new InvalidArgumentException("Mapping $className does not exist");
+            throw new \InvalidArgumentException("Mapping $className does not exist");
         }
 
         // Check if the mapping class implements our needed interface
