@@ -3,6 +3,7 @@
 namespace Noxlogic\SerializerBundle\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use JMS\Serializer\Exception\InvalidArgumentException;
 use Noxlogic\SerializerBundle\Service\Adapter\AdapterInterface;
 use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
 use Symfony\Component\Routing\RouterInterface;
@@ -21,10 +22,29 @@ class Serializer
      */
     protected $router;
 
+    /**
+     * @var array
+     */
+    protected $serviceMappings = array();
+
+
     public function __construct(Registry $registry, RouterInterface $router)
     {
         $this->em = $registry->getManager();
         $this->router = $router;
+    }
+
+    /**
+     * Adds a mapping to the service maps.
+     * @param $className
+     * @param $mapping
+     */
+    function addServiceMapping($mapping) {
+        if (! $mapping instanceof ServiceableSerializerMapping) {
+            throw new InvalidArgumentException('Mapping '.get_class($mapping).' must implement ServiceableSerializerMapping');
+        }
+
+        $this->serviceMappings[$mapping->getEntityClassName()] = $mapping;
     }
 
     /**
@@ -143,18 +163,31 @@ class Serializer
         // Might be a doctrine proxy class. Make sure we get the actual class
         $className = \Doctrine\Common\Util\ClassUtils::getClass($element);
 
-        // If it's an entity, convert into a mapping class name
-        if (strpos($className, '\\Entity\\') !== false) {
-            $className = str_replace('\\Entity\\', '\\Mapping\\', $className).'Mapping';
-        }
+        // Check if we need to load the mapping through a service. This is useful when the mapping needs dependencies like doctrine or others.
+
+        // Mapping already exists
+        if (isset($this->serviceMappings[$className])) {
+            $mapping = $this->serviceMappings[$className];
 
         // Check if it exists
         if (!class_exists($className)) {
             throw new \InvalidArgumentException("Mapping $className does not exist");
+        } else {
+            // If it's an entity, convert into a mapping class name
+            if (strpos($className, '\\Entity\\') !== false) {
+                $className = str_replace('\\Entity\\', '\\Mapping\\', $className) . 'Mapping';
+            }
+
+            // Check if it exists
+            if (!class_exists($className)) {
+                throw new \InvalidArgumentException("Mapping $className does not exist");
+            }
+
+            // Check if the mapping class implements our needed interface
+            $mapping = new $className();
         }
 
-        // Check if the mapping class implements our needed interface
-        $mapping = new $className();
+
         if (!$mapping instanceof SerializerMapping) {
             throw new \InvalidArgumentException("Mapping class $className must implement the SerializerMapping interface");
         }
@@ -184,6 +217,8 @@ class Serializer
     }
 
     /**
+     * Returns serialized data for given element
+     *
      * @param mixed             $element
      * @param SerializerContext $context
      *
@@ -194,6 +229,13 @@ class Serializer
         return $this->_serialize($element, $context);
     }
 
+    /**
+     * Returns a response created by the adapter for given format.
+     *
+     * @param Data $data
+     * @param $format
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function createResponse(Data $data, $format)
     {
         $adapter = $this->getAdapter($format);
