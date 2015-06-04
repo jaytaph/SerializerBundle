@@ -3,7 +3,6 @@
 namespace Noxlogic\SerializerBundle\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use JMS\Serializer\Exception\InvalidArgumentException;
 use Noxlogic\SerializerBundle\Service\Adapter\AdapterInterface;
 use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
 use Symfony\Component\Routing\RouterInterface;
@@ -169,9 +168,6 @@ class Serializer
         if (isset($this->serviceMappings[$className])) {
             $mapping = $this->serviceMappings[$className];
 
-        // Check if it exists
-        if (!class_exists($className)) {
-            throw new \InvalidArgumentException("Mapping $className does not exist");
         } else {
             // If it's an entity, convert into a mapping class name
             if (strpos($className, '\\Entity\\') !== false) {
@@ -209,6 +205,10 @@ class Serializer
      */
     protected function _serialize($element, SerializerContext $context)
     {
+        if (is_array($element)) {
+            return $this->serializeArray($element, $context);
+        }
+
         if ($element instanceof PagerFantaWrapper) {
             return $this->serializeCollection($element, $context);
         }
