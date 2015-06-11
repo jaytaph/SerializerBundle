@@ -3,6 +3,7 @@
 namespace Noxlogic\SerializerBundle\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Collections\Collection;
 use Noxlogic\SerializerBundle\Service\Adapter\AdapterInterface;
 use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
 use Symfony\Component\Routing\RouterInterface;
@@ -40,7 +41,7 @@ class Serializer
      */
     function addServiceMapping($mapping) {
         if (! $mapping instanceof ServiceableSerializerMapping) {
-            throw new InvalidArgumentException('Mapping '.get_class($mapping).' must implement ServiceableSerializerMapping');
+            throw new \InvalidArgumentException('Mapping '.get_class($mapping).' must implement ServiceableSerializerMapping');
         }
 
         $this->serviceMappings[$mapping->getEntityClassName()] = $mapping;
@@ -103,7 +104,7 @@ class Serializer
      *
      * @return DataCollection
      */
-    public function serializeCollection(PagerFantaWrapper $wrapper, SerializerContext $context)
+    public function serializeCollection($name, PagerFantaWrapper $wrapper, SerializerContext $context)
     {
         $collection = DataCollection::create();
 
@@ -118,16 +119,17 @@ class Serializer
         $collection->addState('count', $wrapper->getTotal());
         $collection->addState('pages', $wrapper->getPageCount());
 
+
+        // We are inside a collection. We might want a different layout.
+        $inCollection = $context->isInCollection();
+        $context->setInCollection(true);
+
         foreach ($wrapper->getPager()->getCurrentPageResults() as $item) {
-            // We are inside a collection. We might want a different layout.
-            $inCollection = $context->isInCollection();
-            $context->setInCollection(true);
-
             $element = $this->_serialize($item, $context, $this);
-            $collection->addElement($element);
-
-            $context->setInCollection($inCollection);
+            $collection->addEmbedded($name, $element, true);
         }
+        $context->setInCollection($inCollection);
+
 
         return $collection;
     }
@@ -137,6 +139,7 @@ class Serializer
         $collection = DataCollection::create();
 
         $collection->addState('count', count($elements));
+
         foreach ($elements as $item) {
             // Don't treat array elements as collections
             $inCollection = $context->isInCollection();
@@ -209,8 +212,13 @@ class Serializer
             return $this->serializeArray($element, $context);
         }
 
+        if ($element instanceof Collection) {
+            return $this->serializeArray($element->toArray(), $context);
+        }
+
+
         if ($element instanceof PagerFantaWrapper) {
-            return $this->serializeCollection($element, $context);
+            return $this->serializeCollection($element->getElementName(), $element, $context);
         }
 
         return $this->serializeElement($element, $context);

@@ -29,15 +29,15 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
 
         $collection->addElement($data1);
         $output = $collection->compile();
-        $this->assertCount(1, $output['_elements']);
-        $this->assertEquals($output['_elements'][0]['foo'], 'bar');
+        $this->assertCount(1, $output['_embedded']);
+        $this->assertEquals($output['_embedded'][0]['foo'], 'bar');
 
 
         $collection->addElement($data2);
         $output = $collection->compile();
-        $this->assertCount(2, $output['_elements']);
-        $this->assertEquals($output['_elements'][0]['foo'], 'bar');
-        $this->assertEquals($output['_elements'][1]['baz'], 'qux');
+        $this->assertCount(2, $output['_embedded']);
+        $this->assertEquals($output['_embedded'][0]['foo'], 'bar');
+        $this->assertEquals($output['_embedded'][1]['baz'], 'qux');
 
     }
 

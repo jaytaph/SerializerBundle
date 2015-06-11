@@ -29,12 +29,20 @@ class DataCollection extends Data
     /**
      * @return array
      */
+    public function getElements()
+    {
+        return $this->elements;
+    }
+
+    /**
+     * @return array
+     */
     public function compile()
     {
         $output = parent::compile();
 
         foreach ($this->elements as $element) {
-            $output['_elements'][] = $element->compile();
+            $output[] = $element->compile();
         }
 
         return $output;

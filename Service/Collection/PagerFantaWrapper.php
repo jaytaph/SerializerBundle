@@ -17,12 +17,13 @@ class PagerFantaWrapper
     protected $pageName;
     protected $limitName;
 
-    public function __construct(Pagerfanta $pager, CollectionRouting $routing, $pageName = 'page', $limitName = 'limit')
+    public function __construct(Pagerfanta $pager, CollectionRouting $routing, $pageName = 'page', $limitName = 'limit', $elementName = "elements")
     {
         $this->pager = $pager;
         $this->routing = $routing;
         $this->pageName = $pageName;
         $this->limitName = $limitName;
+        $this->elementName = $elementName;
     }
 
     /**
@@ -76,4 +77,13 @@ class PagerFantaWrapper
             $this->limitName => $this->pager->getMaxPerPage(),
         ));
     }
+
+    /**
+     * @return string
+     */
+    public function getElementName()
+    {
+        return $this->elementName;
+    }
+
 }
