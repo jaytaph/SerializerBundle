@@ -40,10 +40,7 @@ class Data
     {
         if ($data instanceOf DataCollection) {
             foreach ($data->getElements() as $element) {
-                if ($force_array) {
-                    $element = array($element);
-                }
-                $this->addEmbedded($name, $element);
+                $this->addEmbedded($name, $element, $force_array);
             }
             return $this;
         }
