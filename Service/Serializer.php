@@ -6,6 +6,8 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Collections\Collection;
 use Noxlogic\SerializerBundle\Service\Adapter\AdapterInterface;
 use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class Serializer
@@ -23,15 +25,21 @@ class Serializer
     protected $router;
 
     /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @var array
      */
     protected $serviceMappings = array();
 
 
-    public function __construct(Registry $registry, RouterInterface $router)
+    public function __construct(Registry $registry, RouterInterface $router, ContainerInterface $container)
     {
         $this->em = $registry->getManager();
         $this->router = $router;
+        $this->container = $container;
     }
 
     /**
@@ -186,9 +194,12 @@ class Serializer
             $mapping = new $className();
         }
 
-
         if (!$mapping instanceof SerializerMapping) {
             throw new \InvalidArgumentException("Mapping class $className must implement the SerializerMapping interface");
+        }
+
+        if ($mapping instanceof ContainerAwareInterface) {
+            $mapping->setContainer($this->container);
         }
 
         if ($context->isInCollection()) {

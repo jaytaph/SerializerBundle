@@ -2,7 +2,7 @@ services:
     # Main serializer class
     noxlogic_serializer:
         class: Noxlogic\SerializerBundle\Service\Serializer
-        arguments: [ "@doctrine", "@router" ]
+        arguments: [ "@doctrine", "@router", "@service_container" ]
 
     # Available adapters
     noxlogic_serializer.adapter.json:
