@@ -5,17 +5,17 @@ services:
         arguments: [ "@doctrine", "@router", "@service_container" ]
 
     # Available adapters
-    noxlogic_serializer.adapter.json:
-        class: Noxlogic\SerializerBundle\Service\Adapter\Json
+    noxlogic_serializer.output.adapter.json:
+        class: Noxlogic\SerializerBundle\Service\OutputAdapter\JsonHal
         tags:
-            - { name: noxlogic.serializer.adapter }
+            - { name: noxlogic.serializer.output.adapter }
 
-    noxlogic_serializer.adapter.html:
-        class: Noxlogic\SerializerBundle\Service\Adapter\Html
+    noxlogic_serializer.output.adapter.html:
+        class: Noxlogic\SerializerBundle\Service\OutputAdapter\Html
         tags:
-            - { name: noxlogic.serializer.adapter }
+            - { name: noxlogic.serializer.output.adapter }
 
-    noxlogic_serializer.adapter.xml:
-        class: Noxlogic\SerializerBundle\Service\Adapter\Xml
+    noxlogic_serializer.output.adapter.xml:
+        class: Noxlogic\SerializerBundle\Service\OutputAdapter\Xml
         tags:
-            - { name: noxlogic.serializer.adapter }
+            - { name: noxlogic.serializer.output.adapter }

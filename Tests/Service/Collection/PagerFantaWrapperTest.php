@@ -83,4 +83,13 @@ class PagerFantaWrapperTest extends \PHPUnit_Framework_TestCase
         $this->pfw->getPreviousPage();
         $this->pfw->getNextPage();
     }
+
+    function testElementName()
+    {
+        $pfw = new PagerFantaWrapper($this->pagerFantaMock, $this->cr, 'page', 'limit');
+        $this->assertEquals($pfw->getElementName(), 'elements');
+
+        $pfw = new PagerFantaWrapper($this->pagerFantaMock, $this->cr, 'page', 'limit', 'foobar');
+        $this->assertEquals($pfw->getElementName(), 'foobar');
+    }
 }

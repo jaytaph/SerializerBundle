@@ -5,7 +5,7 @@ namespace Noxlogic\SerializerBundle\Service\Collection;
 use Pagerfanta\Pagerfanta;
 
 /**
- * @TODO: Make a nice wrapper around other pagination systems
+ * @TODO: Make a nice wrapper/adapter system around other pagination systems
  */
 class PagerFantaWrapper
 {

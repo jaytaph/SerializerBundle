@@ -1,11 +1,11 @@
 <?php
 
-namespace Noxlogic\SerializerBundle\Service\Adapter;
+namespace Noxlogic\SerializerBundle\Service\OutputAdapter;
 
 use Noxlogic\SerializerBundle\Service\Data;
 use Symfony\Component\HttpFoundation\Response;
 
-interface AdapterInterface
+interface OutputAdapterInterface
 {
     /**
      * Name of the adapter.

@@ -39,7 +39,8 @@ class DataCollection extends Data
      */
     public function compile()
     {
-        $output = parent::compile();
+        //$output = parent::compile();
+        $output = array();
 
         foreach ($this->elements as $element) {
             $output[] = $element->compile();

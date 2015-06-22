@@ -22,10 +22,10 @@ class Data
      */
     public function addState($name, $value)
     {
-        if ($value instanceof Data) {
-            $value = $value->compile();
-        }
-
+//        if ($value instanceof Data) {
+//            $value = $value->compile();
+//        }
+//
         $this->state[$name] = $value;
 
         return $this;
@@ -36,29 +36,27 @@ class Data
      *
      * @return $this
      */
-    public function addEmbedded($name, Data $data, $force_array = false)
+    public function addEmbedded($name, Data $data)
     {
+        // If we add an embedded collection, we assume you add an array of the collection elements
         if ($data instanceOf DataCollection) {
-            foreach ($data->getElements() as $element) {
-                $this->addEmbedded($name, $element, $force_array);
-            }
-            return $this;
+            $data = $data->getElements();
         }
 
-        if ($force_array) {
-            $data = array($data);
-        }
 
+        // Just add the embedded element if it does not exist
         if (! isset($this->embedded[$name])) {
             $this->embedded[$name] = $data;
+
             return $this;
         }
 
-        // Already exists, convert to array
+        // If the element already exist, mak sure it's converted to an array
         if (! is_array($this->embedded[$name])) {
             $this->embedded[$name] = array($this->embedded[$name]);
         }
 
+        // Add the elements
         $this->embedded[$name] = array_merge($this->embedded[$name], is_array($data) ? $data : array($data));
 
         return $this;
@@ -89,6 +87,17 @@ class Data
     public function compile()
     {
         $output = $this->state;
+
+        foreach ($this->state as $name => $resource) {
+            if (is_array($resource)) {
+                foreach ($resource as $element) {
+                    $output[$name][] = $element->compile();
+                }
+            } else {
+                $output[$name] = $resource->compile();
+            }
+        }
+
 
         $output['_links'] = $this->links;
 

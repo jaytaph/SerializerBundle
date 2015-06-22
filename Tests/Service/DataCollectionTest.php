@@ -21,24 +21,20 @@ class DataCollectionTest extends \PHPUnit_Framework_TestCase
         $data2 = Data::create();
         $data2->addState('baz', 'qux');
 
-
         $collection = DataCollection::create();
+        $collection->addEmbedded('emb1', $data1);
+
         $output = $collection->compile();
         $this->assertCount(0, $output['_links']);
-
-
-        $collection->addElement($data1);
-        $output = $collection->compile();
         $this->assertCount(1, $output['_embedded']);
-        $this->assertEquals($output['_embedded'][0]['foo'], 'bar');
+        $this->assertEquals($output['_embedded']['emb1']['foo'], 'bar');
 
-
-        $collection->addElement($data2);
+        $collection->addEmbedded('emb2', $data1);
         $output = $collection->compile();
+        $this->assertCount(0, $output['_links']);
         $this->assertCount(2, $output['_embedded']);
-        $this->assertEquals($output['_embedded'][0]['foo'], 'bar');
-        $this->assertEquals($output['_embedded'][1]['baz'], 'qux');
-
+        $this->assertEquals($output['_embedded']['emb1']['foo'], 'bar');
+        $this->assertEquals($output['_embedded']['emb2']['foo'], 'bar');
     }
 
 }

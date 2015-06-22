@@ -1,24 +1,24 @@
 <?php
 
-namespace Noxlogic\SerializerBundle\Tests\Service\Adapter;
+namespace Noxlogic\SerializerBundle\Tests\Service\OutputAdapter;
 
-use Noxlogic\SerializerBundle\Service\Adapter\Html;
+use Noxlogic\SerializerBundle\Service\OutputAdapter\Xml;
 use Noxlogic\SerializerBundle\Service\Data;
 
-class HtmlTest extends \PHPUnit_Framework_TestCase
+class XmlTest extends \PHPUnit_Framework_TestCase
 {
 
     function testName()
     {
-        $adapter = new Html();
-        $this->assertEquals($adapter->getName(), 'html');
+        $adapter = new Xml();
+        $this->assertEquals($adapter->getName(), 'xml');
     }
 
     function testSupport()
     {
-        $adapter = new Html();
-        $this->assertTrue($adapter->isSupported('html'));
-        $this->assertFalse($adapter->isSupported('xml'));
+        $adapter = new Xml();
+        $this->assertTrue($adapter->isSupported('xml'));
+        $this->assertFalse($adapter->isSupported('json'));
     }
 
     function testConvert()
@@ -33,14 +33,12 @@ class HtmlTest extends \PHPUnit_Framework_TestCase
         $data->addLink('l1', 'http://www.google.com');
         $data->addEmbedded('e1', $data1);
 
-        $adapter = new Html();
+        $adapter = new Xml();
         $response = $adapter->convert($data);
 
-
         // @TODO: Check for decent HTML output
-
-
-        $this->assertEquals($response->headers->get('Content-Type'), 'text/html');
+        
+        $this->assertEquals($response->headers->get('Content-Type'), 'text/xml');
     }
 
 }

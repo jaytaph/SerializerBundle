@@ -2,57 +2,58 @@
 
 namespace Noxlogic\SerializerBundle\Tests\Service;
 
-use Noxlogic\SerializerBundle\Service\Adapter\Html;
-use Noxlogic\SerializerBundle\Service\Adapter\Xml;
+use Noxlogic\SerializerBundle\Service\OutputAdapter\Html;
+use Noxlogic\SerializerBundle\Service\OutputAdapter\Xml;
 use Noxlogic\SerializerBundle\Service\Serializer;
 
 class SerializerTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Noxlogic\SerializerBundle\Service\Serializer
+     * @var Serializer
      */
     protected $serializer;
 
     function setUp() {
         $this->mockRegistry = $this->getMockBuilder('Doctrine\Bundle\DoctrineBundle\Registry')->disableOriginalConstructor()->getMock();
         $this->mockRouter = $this->getMockBuilder('Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor()->getMock();
+        $this->mockContainer = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->disableOriginalConstructor()->getMock();
 
-        $this->serializer = new Serializer($this->mockRegistry, $this->mockRouter);
+        $this->serializer = new Serializer($this->mockRegistry, $this->mockRouter, $this->mockContainer);
     }
 
 
     function testAdapters() {
-        $this->assertFalse($this->serializer->isAdapterLoaded('html'));
-        $this->serializer->addAdapter(new Html());
-        $this->assertTrue($this->serializer->isAdapterLoaded('html'));
-        $this->assertNotNull($this->serializer->getAdapter('html'));
+        $this->assertFalse($this->serializer->isOutputAdapterLoaded('html'));
+        $this->serializer->addOutputAdapter(new Html());
+        $this->assertTrue($this->serializer->isOutputAdapterLoaded('html'));
+        $this->assertNotNull($this->serializer->getOutputAdapter('html'));
 
 
-        $this->serializer->removeAdapter('html');
-        $this->assertFalse($this->serializer->isAdapterLoaded('html'));
+        $this->serializer->removeOutputAdapter('html');
+        $this->assertFalse($this->serializer->isOutputAdapterLoaded('html'));
 
 
-        $this->serializer->addAdapter(new Xml());
-        $this->serializer->addAdapter(new Html());
-        $this->serializer->clearAdapters();
-        $this->assertFalse($this->serializer->isAdapterLoaded('html'));
-        $this->assertFalse($this->serializer->isAdapterLoaded('xml'));
+        $this->serializer->addOutputAdapter(new Xml());
+        $this->serializer->addOutputAdapter(new Html());
+        $this->serializer->clearOutputAdapters();
+        $this->assertFalse($this->serializer->isOutputAdapterLoaded('html'));
+        $this->assertFalse($this->serializer->isOutputAdapterLoaded('xml'));
 
     }
 
     /**
      * @expectedException  \InvalidArgumentException
      */
-    function testGetAdapterFailure() {
-        $this->serializer->getAdapter('foobar');
+    function testGetOutputAdapterFailure() {
+        $this->serializer->getOutputAdapter('foobar');
     }
 
     /**
      * @expectedException  \InvalidArgumentException
      */
-    function testRemoveAdapterFailure() {
-        $this->serializer->removeAdapter('foobar');
+    function testRemoveOutputAdapterFailure() {
+        $this->serializer->removeOutputAdapter('foobar');
     }
 
 }

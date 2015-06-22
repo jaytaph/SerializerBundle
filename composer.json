@@ -13,7 +13,8 @@
         "doctrine/doctrine-bundle": "*"
     },
     "require-dev" : {
-        "pagerfanta/pagerfanta": "~1.0"
+        "pagerfanta/pagerfanta": "~1.0",
+	"phpunit/phpunit": "~4.5"
     },
     "autoload": {
         "psr-0": { "Noxlogic\\SerializerBundle": "" }

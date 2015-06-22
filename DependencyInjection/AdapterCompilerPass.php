@@ -16,9 +16,9 @@ class AdapterCompilerPass implements CompilerPassInterface
 
         $definition = $container->findDefinition('noxlogic_serializer');
 
-        $taggedServices = $container->findTaggedServiceIds('noxlogic.serializer.adapter');
+        $taggedServices = $container->findTaggedServiceIds('noxlogic.serializer.output.adapter');
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('addAdapter', array(new Reference($id)));
+            $definition->addMethodCall('addOutputAdapter', array(new Reference($id)));
         }
     }
 }

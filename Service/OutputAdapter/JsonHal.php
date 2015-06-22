@@ -1,20 +1,20 @@
 <?php
 
-namespace Noxlogic\SerializerBundle\Service\Adapter;
+namespace Noxlogic\SerializerBundle\Service\OutputAdapter;
 
 use Noxlogic\SerializerBundle\Service\Data;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class Json implements AdapterInterface
+class JsonHal implements OutputAdapterInterface
 {
     public function getName()
     {
-        return 'json';
+        return 'json-hal';
     }
 
     public function isSupported($format)
     {
-        return ($format == 'json');
+        return ($format == 'json-hal');
     }
 
     public function convert(Data $data)

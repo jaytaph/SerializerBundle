@@ -4,15 +4,15 @@ namespace Noxlogic\SerializerBundle\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Collections\Collection;
-use Noxlogic\SerializerBundle\Service\Adapter\AdapterInterface;
 use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
+use Noxlogic\SerializerBundle\Service\OutputAdapter\OutputAdapterInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class Serializer
 {
-    protected $adapters = array();
+    protected $outputAdapters = array();
 
     /**
      * @var \Doctrine\Common\Persistence\ObjectManager|object
@@ -29,12 +29,12 @@ class Serializer
      */
     protected $container;
 
+
     /**
-     * @var array
+     * @param Registry $registry
+     * @param RouterInterface $router
+     * @param ContainerInterface $container
      */
-    protected $serviceMappings = array();
-
-
     public function __construct(Registry $registry, RouterInterface $router, ContainerInterface $container)
     {
         $this->em = $registry->getManager();
@@ -43,67 +43,62 @@ class Serializer
     }
 
     /**
-     * Adds a mapping to the service maps.
-     * @param $className
-     * @param $mapping
+     * Adds an output adapter to the serializer
+     *
+     * @param OutputAdapterInterface $adapter
      */
-    function addServiceMapping($mapping) {
-        if (! $mapping instanceof ServiceableSerializerMapping) {
-            throw new \InvalidArgumentException('Mapping '.get_class($mapping).' must implement ServiceableSerializerMapping');
-        }
-
-        $this->serviceMappings[$mapping->getEntityClassName()] = $mapping;
-    }
-
-    /**
-     * @param AdapterInterface $adapter
-     */
-    public function addAdapter(AdapterInterface $adapter)
+    public function addOutputAdapter(OutputAdapterInterface $adapter)
     {
-        $this->adapters[$adapter->getName()] = $adapter;
+        $this->outputAdapters[$adapter->getName()] = $adapter;
     }
 
     /**
+     * Removes an output adapter
+     *
      * @param string $name
      */
-    public function removeAdapter($name)
+    public function removeOutputAdapter($name)
     {
-        if (!isset($this->adapters[$name])) {
+        if (!isset($this->outputAdapters[$name])) {
             throw new \InvalidArgumentException("Adapter '$name' not loaded");
         }
-        unset($this->adapters[$name]);
+        unset($this->outputAdapters[$name]);
     }
 
     /**
-     *
+     * Removes all output adapters
      */
-    public function clearAdapters()
+    public function clearOutputAdapters()
     {
-        $this->adapters = array();
+        $this->outputAdapters = array();
     }
 
     /**
+     * Returns an output adapter or throws an exception when not found
+     *
      * @param string $name
      *
-     * @return AdapterInterface
+     * @return OutputAdapterInterface
      */
-    public function getAdapter($name)
+    public function getOutputAdapter($name)
     {
-        if (!isset($this->adapters[$name])) {
-            throw new \InvalidArgumentException("Adapter '$name' not loaded");
+        if (!isset($this->outputAdapters[$name])) {
+            throw new \InvalidArgumentException("Output adapter '$name' not loaded");
         }
 
-        return $this->adapters[$name];
+        return $this->outputAdapters[$name];
     }
 
     /**
+     * Checks if an output adapter is loaded
+     *
      * @param string $name
      *
      * @return bool
      */
-    public function isAdapterLoaded($name)
+    public function isOutputAdapterLoaded($name)
     {
-        return (isset($this->adapters[$name]));
+        return (isset($this->outputAdapters[$name]));
     }
 
     /**
@@ -134,7 +129,7 @@ class Serializer
 
         foreach ($wrapper->getPager()->getCurrentPageResults() as $item) {
             $element = $this->_serialize($item, $context, $this);
-            $collection->addEmbedded($name, $element, true);
+            $collection->addEmbedded($name, $element);
         }
         $context->setInCollection($inCollection);
 
@@ -175,24 +170,18 @@ class Serializer
 
         // Check if we need to load the mapping through a service. This is useful when the mapping needs dependencies like doctrine or others.
 
-        // Mapping already exists
-        if (isset($this->serviceMappings[$className])) {
-            $mapping = $this->serviceMappings[$className];
-
-        } else {
-            // If it's an entity, convert into a mapping class name
-            if (strpos($className, '\\Entity\\') !== false) {
-                $className = str_replace('\\Entity\\', '\\Mapping\\', $className) . 'Mapping';
-            }
-
-            // Check if it exists
-            if (!class_exists($className)) {
-                throw new \InvalidArgumentException("Mapping $className does not exist");
-            }
-
-            // Check if the mapping class implements our needed interface
-            $mapping = new $className();
+        // If it's an entity, convert into a mapping class name
+        if (strpos($className, '\\Entity\\') !== false) {
+            $className = str_replace('\\Entity\\', '\\Mapping\\', $className) . 'Mapping';
         }
+
+        // Check if it exists
+        if (!class_exists($className)) {
+            throw new \InvalidArgumentException("Mapping $className does not exist");
+        }
+
+        // Check if the mapping class implements our needed interface
+        $mapping = new $className();
 
         if (!$mapping instanceof SerializerMapping) {
             throw new \InvalidArgumentException("Mapping class $className must implement the SerializerMapping interface");
@@ -227,7 +216,6 @@ class Serializer
             return $this->serializeArray($element->toArray(), $context);
         }
 
-
         if ($element instanceof PagerFantaWrapper) {
             return $this->serializeCollection($element->getElementName(), $element, $context);
         }
@@ -257,8 +245,8 @@ class Serializer
      */
     public function createResponse(Data $data, $format)
     {
-        $adapter = $this->getAdapter($format);
+        $outputAdapter = $this->getOutputAdapter($format);
 
-        return $adapter->convert($data);
+        return $outputAdapter->convert($data);
     }
 }
