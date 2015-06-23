@@ -9,9 +9,15 @@ class DateTime implements NodeHandler
 {
     public function handle($element, Serializer $serializer, SerializerContext $context)
     {
-        if (!$element instanceof \DateTimeInterface) {
+        // PHP 5.4 compatibility as \DateTimeInterface needs PHP 5.5
+        if (! interface_exists('\DateTimeInterface') && ! $element instanceof \DateTime) {
             return;
         }
+
+        if (! $element instanceof \DateTimeInterface) {
+            return;
+        }
+
 
         return $element->format(\DateTime::ISO8601);
     }
