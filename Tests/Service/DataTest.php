@@ -6,14 +6,15 @@ use Noxlogic\SerializerBundle\Service\Data;
 
 class DataTest extends \PHPUnit_Framework_TestCase
 {
-
-    function testCreate() {
+    public function testCreate()
+    {
         $data = Data::create();
 
         $this->assertInstanceOf('Noxlogic\SerializerBundle\Service\Data', $data);
     }
 
-    function testSimpleCompilation() {
+    public function testSimpleCompilation()
+    {
         $data = Data::create();
 
         $data->addState('foo', 'bar');
@@ -27,7 +28,8 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $output['_links']);
     }
 
-    function testArrayStates() {
+    public function testArrayStates()
+    {
         $data = Data::create()
             ->addState('first', 'post')
             ->addState('root', 'up')
@@ -43,7 +45,8 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $output['_links']);
     }
 
-    function testComplexLinkCompilation() {
+    public function testComplexLinkCompilation()
+    {
         $data = Data::create();
 
         $data->addState('foo', 'bar');
@@ -66,8 +69,8 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $output['_links']['l2']);
     }
 
-    function testComplexEmbedCompilation() {
-
+    public function testComplexEmbedCompilation()
+    {
         $data2 = Data::create()
             ->addState('deep', 'down')
         ;
@@ -96,7 +99,8 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('http://www.reddit.com', $output['_embedded']['e1.1']['_links']['l2']['href']);
     }
 
-    function testAddState() {
+    public function testAddState()
+    {
         $data = Data::create();
         $data->addState('foo', 'bar');
 
@@ -113,7 +117,8 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->assertArraySubset(array('foo' => array('bar' => 'baz', '_links' => array()), '_links' => array()), $output);
     }
 
-    function testDisplayLinks() {
+    public function testDisplayLinks()
+    {
         $data = Data::create()
             ->addState('foo', 'bar')
         ;
@@ -135,5 +140,4 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $output = $data->compile();
         $this->assertArrayHasKey('_links', $output);
     }
-
 }

@@ -7,14 +7,12 @@ use Noxlogic\SerializerBundle\Service\SerializerContext;
 
 class DateTime implements NodeHandler
 {
-
-    function handle($element, Serializer $serializer, SerializerContext $context)
+    public function handle($element, Serializer $serializer, SerializerContext $context)
     {
-        if (! $element instanceof \DateTimeInterface) {
-            return null;
+        if (!$element instanceof \DateTimeInterface) {
+            return;
         }
 
         return $element->format(\DateTime::ISO8601);
     }
-
 }

@@ -2,23 +2,21 @@
 
 namespace Noxlogic\SerializerBundle\Tests\Service;
 
-
 use Noxlogic\SerializerBundle\Service\Collection\CollectionRouting;
-use Noxlogic\SerializerBundle\Service\SerializerContext;
 
 class CollectionRoutingTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @expectedException \LogicException
      */
-    function testCall()
+    public function testCall()
     {
         $cr = new CollectionRouting('my/site', array('id' => 1));
         $cr->generate();
     }
 
-    function testGenerate() {
+    public function testGenerate()
+    {
         $router = $this->getMockBuilder('Symfony\Component\Routing\RouterInterface')
                 ->getMock();
         $router->expects($this->once())
@@ -29,5 +27,4 @@ class CollectionRoutingTest extends \PHPUnit_Framework_TestCase
         $cr->setRouter($router);
         $cr->generate(array('foo' => 'bar'));
     }
-
 }

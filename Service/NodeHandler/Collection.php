@@ -5,20 +5,17 @@ namespace Noxlogic\SerializerBundle\Service\NodeHandler;
 use Noxlogic\SerializerBundle\Service\Data;
 use Noxlogic\SerializerBundle\Service\Serializer;
 use Noxlogic\SerializerBundle\Service\SerializerContext;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Collection implements NodeHandler
 {
     /**
      * @param $element
      * @param SerializerContext $context
-     * @return null
      */
-    function handle($element, Serializer $serializer, SerializerContext $context)
+    public function handle($element, Serializer $serializer, SerializerContext $context)
     {
-        if (! $element instanceof \Traversable && ! is_array($element)) {
-            return null;
+        if (!$element instanceof \Traversable && !is_array($element)) {
+            return;
         }
 
         // Make sure that we always work with traversable objects instead of arrays
@@ -41,5 +38,4 @@ class Collection implements NodeHandler
 
         return $data;
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace Noxlogic\SerializerBundle\Tests\Service\NodeHandler;
 
-
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Noxlogic\SerializerBundle\Service\NodeHandler\Scalar;
 use Noxlogic\SerializerBundle\Service\Serializer;
@@ -24,7 +23,8 @@ class ScalarTest extends \PHPUnit_Framework_TestCase
     /* @var ContainerInterface */
     protected $mockContainer;
 
-    function setUp() {
+    public function setUp()
+    {
         $this->mockRegistry = $this->getMockBuilder('Doctrine\Bundle\DoctrineBundle\Registry')->disableOriginalConstructor()->getMock();
         $this->mockRouter = $this->getMockBuilder('Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor()->getMock();
         $this->mockContainer = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->disableOriginalConstructor()->getMock();
@@ -32,7 +32,8 @@ class ScalarTest extends \PHPUnit_Framework_TestCase
         $this->serializer = new Serializer($this->mockRegistry, $this->mockRouter, $this->mockContainer);
     }
 
-    function testScalarNode() {
+    public function testScalarNode()
+    {
         $context = new SerializerContext();
 
         $node = new Scalar();
@@ -51,5 +52,4 @@ class ScalarTest extends \PHPUnit_Framework_TestCase
         $output = $node->handle(array('foobar'), $this->serializer, $context);
         $this->assertNull($output);
     }
-
 }

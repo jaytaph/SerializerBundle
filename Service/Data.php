@@ -5,14 +5,14 @@ namespace Noxlogic\SerializerBundle\Service;
 class Data
 {
     /**
-     * Array with all properties (state, _links, _embedded etc)
+     * Array with all properties (state, _links, _embedded etc).
      *
      * @var array
      */
     protected $properties = array();
 
     /**
-     * Always add the `_links`, even when its empty
+     * Always add the `_links`, even when its empty.
      *
      * @var bool
      */
@@ -24,11 +24,12 @@ class Data
     }
 
     /**
-     *
      * @param $displayLinks
+     *
      * @return $this
      */
-    public function alwaysDisplayLinks($displayLinks) {
+    public function alwaysDisplayLinks($displayLinks)
+    {
         $this->displayLinks = $displayLinks;
 
         return $this;
@@ -79,10 +80,9 @@ class Data
         return $this;
     }
 
-
     /**
      * Adds a name/value to a certain property of this class. Will add scalar elements, but when arrays are added, or
-     * when multiple value in the same property[name] are stored, it will automatically be converted to an array
+     * when multiple value in the same property[name] are stored, it will automatically be converted to an array.
      *
      * @param $property
      * @param $value
@@ -90,19 +90,19 @@ class Data
     protected function addEntry($property, $name, $value)
     {
         // Property does not exist, create it first
-        if (! isset($this->properties[$property][$name])) {
+        if (!isset($this->properties[$property][$name])) {
             $this->properties[$property][$name] = $value;
 
             return;
         }
 
         // Property is not an array, convert it first
-        if (! is_array($this->properties[$property][$name])) {
+        if (!is_array($this->properties[$property][$name])) {
             $this->properties[$property][$name] = array($this->properties[$property][$name]);
         }
 
         // Wrap value inside an array if needed
-        if (! is_array($value)) {
+        if (!is_array($value)) {
             $value = array($value);
         }
 
@@ -110,9 +110,8 @@ class Data
         $this->properties[$property][$name] = array_merge($this->properties[$property][$name], $value);
     }
 
-
     /**
-     * Compile the whole data object (including underlying data objects)
+     * Compile the whole data object (including underlying data objects).
      *
      * @return array
      */
@@ -137,16 +136,17 @@ class Data
     }
 
     /**
-     * Compile a property array (embedded, links, state etc) into a completely compiled array
+     * Compile a property array (embedded, links, state etc) into a completely compiled array.
      *
      * @param $property
+     *
      * @return array
      */
-    function compileProperty($property)
+    public function compileProperty($property)
     {
         $output = array();
 
-        if (! isset($this->properties[$property])) {
+        if (!isset($this->properties[$property])) {
             return array();
         }
 
@@ -164,18 +164,18 @@ class Data
     }
 
     /**
-     * Returns either direct element, or when it's a Data object, it's compiled value
+     * Returns either direct element, or when it's a Data object, it's compiled value.
      *
      * @param $element
+     *
      * @return array
      */
     protected function getElementValue($element)
     {
-        if ($element instanceof Data) {
+        if ($element instanceof self) {
             return $element->compile();
         }
 
         return $element;
     }
-
 }

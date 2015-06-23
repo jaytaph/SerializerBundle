@@ -25,7 +25,8 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     /* @var ContainerInterface */
     protected $mockContainer;
 
-    function setUp() {
+    public function setUp()
+    {
         $this->mockRegistry = $this->getMockBuilder('Doctrine\Bundle\DoctrineBundle\Registry')->disableOriginalConstructor()->getMock();
         $this->mockRouter = $this->getMockBuilder('Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor()->getMock();
         $this->mockContainer = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->disableOriginalConstructor()->getMock();
@@ -33,8 +34,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->serializer = new Serializer($this->mockRegistry, $this->mockRouter, $this->mockContainer);
     }
 
-
-    function testIncorrectDoctrineEntityNode()
+    public function testIncorrectDoctrineEntityNode()
     {
         $context = new SerializerContext();
 
@@ -43,7 +43,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($output);
     }
 
-    function testOutput()
+    public function testOutput()
     {
         $context = new SerializerContext();
 
@@ -61,7 +61,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('_links', $output);
     }
 
-    function testOutputWithArray()
+    public function testOutputWithArray()
     {
         $context = new SerializerContext();
 
@@ -79,7 +79,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('_links', $output);
     }
 
-    function testOutputWithTraversable()
+    public function testOutputWithTraversable()
     {
         $context = new SerializerContext();
 
@@ -101,8 +101,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('_links', $output);
     }
 
-
-    function testOutputWithComplexElements()
+    public function testOutputWithComplexElements()
     {
         $context = new SerializerContext();
 
@@ -129,5 +128,4 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('_links', $output['elements'][2]);
         $this->assertArrayNotHasKey('_links', $output);
     }
-
 }

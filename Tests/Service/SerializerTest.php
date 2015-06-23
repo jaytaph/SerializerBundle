@@ -3,8 +3,6 @@
 namespace Noxlogic\SerializerBundle\Tests\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Noxlogic\SerializerBundle\Service\Collection\CollectionRouting;
-use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
 use Noxlogic\SerializerBundle\Service\Data;
 use Noxlogic\SerializerBundle\Service\NodeHandler\Scalar;
 use Noxlogic\SerializerBundle\Service\OutputAdapter\Html;
@@ -12,15 +10,11 @@ use Noxlogic\SerializerBundle\Service\OutputAdapter\JsonHal;
 use Noxlogic\SerializerBundle\Service\OutputAdapter\Xml;
 use Noxlogic\SerializerBundle\Service\Serializer;
 use Noxlogic\SerializerBundle\Service\SerializerContext;
-use Pagerfanta\Adapter\ArrayAdapter;
-use Pagerfanta\Pagerfanta;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 class SerializerTest extends \PHPUnit_Framework_TestCase
 {
-
     /* @var Serializer */
     protected $serializer;
 
@@ -33,7 +27,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     /* @var ContainerInterface */
     protected $mockContainer;
 
-    function setUp()
+    public function setUp()
     {
         $this->mockRegistry = $this->getMockBuilder('Doctrine\Bundle\DoctrineBundle\Registry')->disableOriginalConstructor()->getMock();
         $this->mockRouter = $this->getMockBuilder('Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor()->getMock();
@@ -42,31 +36,27 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $this->serializer = new Serializer($this->mockRegistry, $this->mockRouter, $this->mockContainer);
     }
 
-
-    function testAdapters()
+    public function testAdapters()
     {
         $this->assertFalse($this->serializer->isOutputAdapterLoaded('html'));
         $this->serializer->addOutputAdapter(new Html());
         $this->assertTrue($this->serializer->isOutputAdapterLoaded('html'));
         $this->assertNotNull($this->serializer->getOutputAdapter('html'));
 
-
         $this->serializer->removeOutputAdapter('html');
         $this->assertFalse($this->serializer->isOutputAdapterLoaded('html'));
-
 
         $this->serializer->addOutputAdapter(new Xml());
         $this->serializer->addOutputAdapter(new Html());
         $this->serializer->clearOutputAdapters();
         $this->assertFalse($this->serializer->isOutputAdapterLoaded('html'));
         $this->assertFalse($this->serializer->isOutputAdapterLoaded('xml'));
-
     }
 
     /**
      * @expectedException  \InvalidArgumentException
      */
-    function testGetOutputAdapterFailure()
+    public function testGetOutputAdapterFailure()
     {
         $this->serializer->getOutputAdapter('foobar');
     }
@@ -74,12 +64,12 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException  \InvalidArgumentException
      */
-    function testRemoveOutputAdapterFailure()
+    public function testRemoveOutputAdapterFailure()
     {
         $this->serializer->removeOutputAdapter('foobar');
     }
 
-    function testCreateResponse()
+    public function testCreateResponse()
     {
         $this->serializer->addOutputAdapter(new JsonHal());
 
@@ -94,13 +84,13 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \LogicException
      */
-    function testSerializerWithUnknownNode()
+    public function testSerializerWithUnknownNode()
     {
         $context = new SerializerContext();
         $this->serializer->serialize(new \DomDocument(), $context);
     }
 
-    function testSerializerWithSimpleScalar()
+    public function testSerializerWithSimpleScalar()
     {
         $context = new SerializerContext();
         $output = $this->serializer->serialize('foobar', $context);
@@ -108,7 +98,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($output, 'foobar');
     }
 
-    function testSerializedWithDoctrineEntity()
+    public function testSerializedWithDoctrineEntity()
     {
         $context = new SerializerContext();
         $output = $this->serializer->serialize('foobar', $context);
@@ -116,14 +106,13 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($output, 'foobar');
     }
 
-    function testDependencies()
+    public function testDependencies()
     {
         $this->assertEquals($this->serializer->getContainer(), $this->mockContainer);
         $this->assertEquals($this->serializer->getRouter(), $this->mockRouter);
     }
 
-
-    function priorityDataProvider()
+    public function priorityDataProvider()
     {
         return array(
             array(-256),
@@ -137,17 +126,15 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
      * @dataProvider priorityDataProvider
      * @expectedException \LogicException
      */
-    function testPriorityOfNodeAdapters($priority)
+    public function testPriorityOfNodeAdapters($priority)
     {
         $this->serializer->addNodeHandler(new Scalar(), $priority);
     }
 
-    function testSerializerWithoutContext()
+    public function testSerializerWithoutContext()
     {
         $output = $this->serializer->serialize('foobar');
 
         $this->assertEquals($output, 'foobar');
     }
-
-
 }

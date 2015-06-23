@@ -6,11 +6,10 @@ use Noxlogic\SerializerBundle\Service\Serializer;
 use Noxlogic\SerializerBundle\Service\SerializerContext;
 use Noxlogic\SerializerBundle\Service\SerializerMapping;
 
-class RootMapping implements SerializerMapping {
-
+class RootMapping implements SerializerMapping
+{
     public function mapping($entity, Serializer $serializer, SerializerContext $context)
     {
         // TODO: Implement entity() method.
     }
-
 }

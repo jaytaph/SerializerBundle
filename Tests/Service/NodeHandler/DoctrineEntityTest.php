@@ -2,7 +2,6 @@
 
 namespace Noxlogic\SerializerBundle\Tests\Service\NodeHandler;
 
-
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Noxlogic\SerializerBundle\Service\NodeHandler\DoctrineEntity;
 use Noxlogic\SerializerBundle\Service\Serializer;
@@ -28,7 +27,8 @@ class DoctrineEntityTest extends \PHPUnit_Framework_TestCase
     /* @var ContainerInterface */
     protected $mockContainer;
 
-    function setUp() {
+    public function setUp()
+    {
         $this->mockRegistry = $this->getMockBuilder('Doctrine\Bundle\DoctrineBundle\Registry')->disableOriginalConstructor()->getMock();
         $this->mockRouter = $this->getMockBuilder('Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor()->getMock();
         $this->mockContainer = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->disableOriginalConstructor()->getMock();
@@ -36,8 +36,7 @@ class DoctrineEntityTest extends \PHPUnit_Framework_TestCase
         $this->serializer = new Serializer($this->mockRegistry, $this->mockRouter, $this->mockContainer);
     }
 
-
-    function testIncorrectDoctrineEntityNode()
+    public function testIncorrectDoctrineEntityNode()
     {
         $context = new SerializerContext();
 
@@ -46,7 +45,7 @@ class DoctrineEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($output);
     }
 
-    function testNoMapping()
+    public function testNoMapping()
     {
         $context = new SerializerContext();
 
@@ -57,11 +56,10 @@ class DoctrineEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($output);
     }
 
-
     /**
      * @expectedException \InvalidArgumentException
      */
-    function testNomapperInterface()
+    public function testNomapperInterface()
     {
         $context = new SerializerContext();
 
@@ -72,7 +70,7 @@ class DoctrineEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($output);
     }
 
-    function testMappingInSameDir()
+    public function testMappingInSameDir()
     {
         $context = new SerializerContext();
 
@@ -83,7 +81,8 @@ class DoctrineEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($output);
     }
 
-    function testOutput() {
+    public function testOutput()
+    {
         $context = new SerializerContext();
 
         $entity = new User();
@@ -100,5 +99,4 @@ class DoctrineEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($output['fullname'], 'john doe');
         $this->assertEquals($output['_links']['self']['href'], 'http://www.google.com');
     }
-
 }

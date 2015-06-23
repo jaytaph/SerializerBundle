@@ -2,8 +2,8 @@
 
 namespace Noxlogic\SerializerBundle\Tests\Service\NodeHandler\Fixtures\Entity;
 
-class User {
-
+class User
+{
     protected $firstname;
     protected $lastname;
 
@@ -38,5 +38,4 @@ class User {
     {
         $this->lastname = $lastname;
     }
-
 }

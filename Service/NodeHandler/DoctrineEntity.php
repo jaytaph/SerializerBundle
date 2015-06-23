@@ -5,22 +5,17 @@ namespace Noxlogic\SerializerBundle\Service\NodeHandler;
 use Noxlogic\SerializerBundle\Service\Serializer;
 use Noxlogic\SerializerBundle\Service\SerializerContext;
 use Noxlogic\SerializerBundle\Service\SerializerMapping;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Routing\RouterInterface;
 
 class DoctrineEntity implements NodeHandler
 {
-
     /**
      * @param $element
      * @param SerializerContext $context
-     * @return null
      */
-    function handle($element, Serializer $serializer, SerializerContext $context)
+    public function handle($element, Serializer $serializer, SerializerContext $context)
     {
-        if (! is_object($element)) {
-            return null;
+        if (!is_object($element)) {
+            return;
         }
 
         // the current element might be a doctrine proxy class. Make sure we get the actual class.
@@ -35,7 +30,7 @@ class DoctrineEntity implements NodeHandler
 
         // Check if the mapping class exists
         if (!class_exists($mappingClassName)) {
-            return null;
+            return;
         }
 
         // Check if the mapping class implements our needed interface
@@ -52,5 +47,4 @@ class DoctrineEntity implements NodeHandler
 
         return $data;
     }
-
 }

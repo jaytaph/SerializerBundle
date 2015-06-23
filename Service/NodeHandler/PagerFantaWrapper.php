@@ -6,22 +6,20 @@ use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper as PagerFanta
 use Noxlogic\SerializerBundle\Service\Data;
 use Noxlogic\SerializerBundle\Service\Serializer;
 use Noxlogic\SerializerBundle\Service\SerializerContext;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PagerFantaWrapper implements NodeHandler
 {
-
     /**
      * @param $element
-     * @param Serializer $serializer
+     * @param Serializer        $serializer
      * @param SerializerContext $context
+     *
      * @return Data|null
      */
-    function handle($element, Serializer $serializer, SerializerContext $context)
+    public function handle($element, Serializer $serializer, SerializerContext $context)
     {
-        if (! $element instanceof PagerFantaWrapperCollection) {
-            return null;
+        if (!$element instanceof PagerFantaWrapperCollection) {
+            return;
         }
 
         $wrapper = $element;
@@ -47,5 +45,4 @@ class PagerFantaWrapper implements NodeHandler
 
         return $data;
     }
-
 }

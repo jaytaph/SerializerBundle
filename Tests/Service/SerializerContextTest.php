@@ -2,19 +2,19 @@
 
 namespace Noxlogic\SerializerBundle\Tests\Service;
 
-
 use Noxlogic\SerializerBundle\Service\SerializerContext;
 
 class SerializerContextTest extends \PHPUnit_Framework_TestCase
 {
-
-    function testCreate() {
+    public function testCreate()
+    {
         $context = SerializerContext::create();
 
         $this->assertInstanceOf('Noxlogic\SerializerBundle\Service\SerializerContext', $context);
     }
 
-    function testGroups() {
+    public function testGroups()
+    {
         $context = SerializerContext::create();
         $this->assertEquals($context->getGroups(), array());
 
@@ -22,7 +22,7 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($context->hasGroup('DEFAULT'));
         $this->assertFalse($context->hasGroup('FOO'));
 
-        $context->setGroups(array('foo','bar'));
+        $context->setGroups(array('foo', 'bar'));
         $this->assertEquals($context->getGroups(), array('FOO', 'BAR'));
 
         $this->assertTrue($context->hasGroup('default'));
@@ -34,7 +34,8 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($context->hasGroup('baz'));
     }
 
-    function testVersion() {
+    public function testVersion()
+    {
         $context = SerializerContext::create();
         $this->assertNull($context->getVersion());
         $this->assertTrue($context->sinceVersion('1.2.3'));
@@ -56,7 +57,8 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($context->untilVersion('1.2.0'));
     }
 
-    function testCollection() {
+    public function testCollection()
+    {
         $context = SerializerContext::create();
 
 //        $this->assertFalse($context->isInCollection());
@@ -65,5 +67,4 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
 //        $context->setInCollection(false);
 //        $this->assertFalse($context->isInCollection());
     }
-
 }

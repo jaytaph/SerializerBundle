@@ -7,21 +7,20 @@ use Noxlogic\SerializerBundle\Service\Data;
 
 class XmlTest extends \PHPUnit_Framework_TestCase
 {
-
-    function testName()
+    public function testName()
     {
         $adapter = new Xml();
         $this->assertEquals($adapter->getName(), 'xml');
     }
 
-    function testSupport()
+    public function testSupport()
     {
         $adapter = new Xml();
         $this->assertTrue($adapter->isSupported('xml'));
         $this->assertFalse($adapter->isSupported('json'));
     }
 
-    function testConvert()
+    public function testConvert()
     {
         $data2 = Data::create();
         $data2->addState('deep', 'down');
@@ -37,8 +36,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
         $response = $adapter->convert($data);
 
         // @TODO: Check for decent HTML output
-        
+
         $this->assertEquals($response->headers->get('Content-Type'), 'text/xml');
     }
-
 }

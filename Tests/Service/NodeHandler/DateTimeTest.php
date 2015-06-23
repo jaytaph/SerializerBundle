@@ -23,7 +23,8 @@ class DateTimeTest extends \PHPUnit_Framework_TestCase
     /* @var ContainerInterface */
     protected $mockContainer;
 
-    function setUp() {
+    public function setUp()
+    {
         $this->mockRegistry = $this->getMockBuilder('Doctrine\Bundle\DoctrineBundle\Registry')->disableOriginalConstructor()->getMock();
         $this->mockRouter = $this->getMockBuilder('Symfony\Component\Routing\RouterInterface')->disableOriginalConstructor()->getMock();
         $this->mockContainer = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->disableOriginalConstructor()->getMock();
@@ -31,8 +32,7 @@ class DateTimeTest extends \PHPUnit_Framework_TestCase
         $this->serializer = new Serializer($this->mockRegistry, $this->mockRouter, $this->mockContainer);
     }
 
-
-    function testIncorrectDoctrineEntityNode()
+    public function testIncorrectDoctrineEntityNode()
     {
         $context = new SerializerContext();
 
@@ -47,17 +47,16 @@ class DateTimeTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($output);
     }
 
-    function testDateTimeNode() {
+    public function testDateTimeNode()
+    {
         $context = new SerializerContext();
 
         $node = new DateTime();
-        $data = $node->handle(new \DateTime("2015-07-09 12:34:56", new \DateTimeZone('CET')), $this->serializer, $context);
+        $data = $node->handle(new \DateTime('2015-07-09 12:34:56', new \DateTimeZone('CET')), $this->serializer, $context);
         $this->assertEquals($data, '2015-07-09T12:34:56+0200');
 
         $node = new DateTime();
-        $data = $node->handle(new \DateTime("2015-07-09 12:34:56", new \DateTimeZone('PST')), $this->serializer, $context);
+        $data = $node->handle(new \DateTime('2015-07-09 12:34:56', new \DateTimeZone('PST')), $this->serializer, $context);
         $this->assertEquals($data, '2015-07-09T12:34:56-0700');
-
     }
-
 }

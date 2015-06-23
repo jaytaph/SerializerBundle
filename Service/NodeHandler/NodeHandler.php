@@ -7,5 +7,5 @@ use Noxlogic\SerializerBundle\Service\SerializerContext;
 
 interface NodeHandler
 {
-    function handle($element, Serializer $serializer, SerializerContext $context);
+    public function handle($element, Serializer $serializer, SerializerContext $context);
 }

@@ -8,9 +8,8 @@ use Noxlogic\SerializerBundle\Service\SerializerContext;
 use Noxlogic\SerializerBundle\Service\SerializerMapping;
 use Noxlogic\SerializerBundle\Tests\Service\NodeHandler\Fixtures\Entity\User;
 
-class UserMapping implements SerializerMapping {
-
-
+class UserMapping implements SerializerMapping
+{
     public function mapping($entity, Serializer $serializer, SerializerContext $context)
     {
         /* @var User $entity */
@@ -21,5 +20,4 @@ class UserMapping implements SerializerMapping {
             ->addLink('self', 'http://www.google.com')
         ;
     }
-
 }

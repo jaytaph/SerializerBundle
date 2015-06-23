@@ -8,7 +8,7 @@ class SerializerContext
     protected $groups = array();
 
     /**
-     * Fluent interface creator
+     * Fluent interface creator.
      *
      * @return SerializerContext
      */
@@ -18,7 +18,7 @@ class SerializerContext
     }
 
     /**
-     * Returns all the groups configured
+     * Returns all the groups configured.
      *
      * @return array
      */
@@ -28,9 +28,10 @@ class SerializerContext
     }
 
     /**
-     * Sets an array of groups
+     * Sets an array of groups.
      *
      * @param array $groups
+     *
      * @return $this
      */
     public function setGroups(array $groups)
@@ -41,19 +42,20 @@ class SerializerContext
         return $this;
     }
 
-
     /**
      * @param $group
+     *
      * @return $this
      */
-    public function addGroup($group) {
+    public function addGroup($group)
+    {
         $this->groups[] = strtoupper($group);
 
         return $this;
     }
 
     /**
-     * Return the current version
+     * Return the current version.
      *
      * @return string
      */
@@ -63,9 +65,10 @@ class SerializerContext
     }
 
     /**
-     * Sets the current version
+     * Sets the current version.
      *
      * @param null $version
+     *
      * @return $this
      */
     public function setVersion($version)
@@ -76,7 +79,7 @@ class SerializerContext
     }
 
     /**
-     * Checks if the given version is higher or equal than the current defined
+     * Checks if the given version is higher or equal than the current defined.
      *
      * @param $version
      *
@@ -92,7 +95,7 @@ class SerializerContext
     }
 
     /**
-     * Checks if the given version is lower than the current defined
+     * Checks if the given version is lower than the current defined.
      *
      * @param $version
      *
@@ -108,7 +111,7 @@ class SerializerContext
     }
 
     /**
-     * return true when the given group is current defined
+     * return true when the given group is current defined.
      *
      * @param $group
      *
@@ -118,5 +121,4 @@ class SerializerContext
     {
         return in_array(strtoupper($group), array_merge(array('DEFAULT'), $this->groups));
     }
-
 }

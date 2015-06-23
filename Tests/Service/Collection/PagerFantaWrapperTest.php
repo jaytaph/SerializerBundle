@@ -2,33 +2,30 @@
 
 namespace Noxlogic\SerializerBundle\Tests\Service;
 
-
-use Noxlogic\SerializerBundle\Service\Collection\CollectionRouting;
 use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
 
 class PagerFantaWrapperTest extends \PHPUnit_Framework_TestCase
 {
-
-    function setUp() {
+    public function setUp()
+    {
         $this->pagerFantaMock = $this->getMockBuilder('Pagerfanta\Pagerfanta')->disableOriginalConstructor()->getMock();
         $this->cr = $this->getMockBuilder('Noxlogic\SerializerBundle\Service\Collection\CollectionRouting')->disableOriginalConstructor()->getMock();
 
         $this->pfw = new PagerFantaWrapper($this->pagerFantaMock, $this->cr, 'page', 'limit');
     }
 
-    function testGetPager()
+    public function testGetPager()
     {
         $this->assertEquals($this->pagerFantaMock, $this->pfw->getPager());
     }
 
-    function testPageGetters()
+    public function testPageGetters()
     {
         $this->pagerFantaMock
             ->expects($this->once())
             ->method('getNbResults')
         ;
         $this->pfw->getTotal();
-
 
         $this->pagerFantaMock
             ->expects($this->once())
@@ -47,7 +44,7 @@ class PagerFantaWrapperTest extends \PHPUnit_Framework_TestCase
         $this->pfw->getCurrentPage();
     }
 
-    function testHasNextPrev()
+    public function testHasNextPrev()
     {
         $this->pagerFantaMock
                 ->expects($this->once())
@@ -60,8 +57,8 @@ class PagerFantaWrapperTest extends \PHPUnit_Framework_TestCase
         $this->pfw->hasNextPage();
     }
 
-
-    function testGetPrevNextPage() {
+    public function testGetPrevNextPage()
+    {
         $this->pagerFantaMock
                 ->method('getPreviousPage')
                 ->willReturn(10);
@@ -84,7 +81,7 @@ class PagerFantaWrapperTest extends \PHPUnit_Framework_TestCase
         $this->pfw->getNextPage();
     }
 
-    function testElementName()
+    public function testElementName()
     {
         $pfw = new PagerFantaWrapper($this->pagerFantaMock, $this->cr, 'page', 'limit');
         $this->assertEquals($pfw->getElementName(), 'elements');

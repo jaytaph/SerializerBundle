@@ -12,7 +12,7 @@ use Symfony\Component\Routing\RouterInterface;
 class Serializer
 {
     /**
-     * Loaded output adapters
+     * Loaded output adapters.
      *
      * @var array
      */
@@ -38,10 +38,9 @@ class Serializer
      */
     protected $nodeHandlers;
 
-
     /**
-     * @param Registry $registry
-     * @param RouterInterface $router
+     * @param Registry           $registry
+     * @param RouterInterface    $router
      * @param ContainerInterface $container
      */
     public function __construct(Registry $registry, RouterInterface $router, ContainerInterface $container)
@@ -58,20 +57,20 @@ class Serializer
     }
 
     /**
-     * Adds an additional node handler on the given priority (higher the earlier matching)
+     * Adds an additional node handler on the given priority (higher the earlier matching).
      *
      * @param NodeHandler $handler
-     * @param int $priority
+     * @param int         $priority
      */
     public function addNodeHandler(NodeHandler $handler, $priority = 0)
     {
-        $priority = (int)$priority;
+        $priority = (int) $priority;
 
         if ($priority < -255 || $priority > 255) {
-            throw new \LogicException("Priority should be between -255 and 255");
+            throw new \LogicException('Priority should be between -255 and 255');
         }
 
-        if (! isset($this->nodeHandlers[$priority])) {
+        if (!isset($this->nodeHandlers[$priority])) {
             $this->nodeHandlers[$priority] = array();
         }
 
@@ -81,7 +80,7 @@ class Serializer
     }
 
     /**
-     * Adds an output adapter to the serializer
+     * Adds an output adapter to the serializer.
      *
      * @param OutputAdapterInterface $adapter
      */
@@ -91,7 +90,7 @@ class Serializer
     }
 
     /**
-     * Removes an output adapter
+     * Removes an output adapter.
      *
      * @param string $name
      */
@@ -104,7 +103,7 @@ class Serializer
     }
 
     /**
-     * Removes all output adapters
+     * Removes all output adapters.
      */
     public function clearOutputAdapters()
     {
@@ -112,7 +111,7 @@ class Serializer
     }
 
     /**
-     * Returns an output adapter or throws an exception when not found
+     * Returns an output adapter or throws an exception when not found.
      *
      * @param string $name
      *
@@ -128,7 +127,7 @@ class Serializer
     }
 
     /**
-     * Checks if an output adapter is loaded
+     * Checks if an output adapter is loaded.
      *
      * @param string $name
      *
@@ -156,7 +155,7 @@ class Serializer
     }
 
     /**
-     * Returns serialized data for given element
+     * Returns serialized data for given element.
      *
      * @param mixed             $element
      * @param SerializerContext $context
@@ -194,6 +193,7 @@ class Serializer
      *
      * @param Data $data
      * @param $format
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function createResponse(Data $data, $format)
@@ -202,5 +202,4 @@ class Serializer
 
         return $outputAdapter->convert($data);
     }
-
 }

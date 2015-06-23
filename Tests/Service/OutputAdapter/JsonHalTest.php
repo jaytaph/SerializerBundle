@@ -7,21 +7,20 @@ use Noxlogic\SerializerBundle\Service\Data;
 
 class JsonHalTest extends \PHPUnit_Framework_TestCase
 {
-
-    function testName()
+    public function testName()
     {
         $adapter = new JsonHal();
         $this->assertEquals($adapter->getName(), 'json-hal');
     }
 
-    function testSupport()
+    public function testSupport()
     {
         $adapter = new JsonHal();
         $this->assertTrue($adapter->isSupported('json-hal'));
         $this->assertFalse($adapter->isSupported('xml'));
     }
 
-    function testConvert()
+    public function testConvert()
     {
         $data2 = Data::create()
             ->addState('deep', 'down')
@@ -43,5 +42,4 @@ class JsonHalTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($response->headers->get('Content-Type'), 'application/hal+json');
         $this->assertEquals($response->getContent(), '{"_links":{"l1":{"href":"http:\/\/www.google.com"}},"_embedded":{"e1":{"foo":"bar","_links":{"l2":{"href":"http:\/\/www.reddit.com"}},"_embedded":{"e2":{"deep":"down","_links":[]}}}}}');
     }
-
 }

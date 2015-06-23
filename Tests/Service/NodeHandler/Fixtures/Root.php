@@ -2,6 +2,6 @@
 
 namespace Noxlogic\SerializerBundle\Tests\Service\NodeHandler\Fixtures;
 
-class Root {
-
+class Root
+{
 }
