@@ -16,7 +16,7 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
 
     function testGroups() {
         $context = SerializerContext::create();
-        $this->assertEquals($context->getGroups(), array('DEFAULT'));
+        $this->assertEquals($context->getGroups(), array());
 
         $this->assertTrue($context->hasGroup('default'));
         $this->assertTrue($context->hasGroup('DEFAULT'));
@@ -25,14 +25,16 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
         $context->setGroups(array('foo','bar'));
         $this->assertEquals($context->getGroups(), array('FOO', 'BAR'));
 
-        $this->assertFalse($context->hasGroup('default'));
-        $this->assertFalse($context->hasGroup('DEFAULT'));
+        $this->assertTrue($context->hasGroup('default'));
+        $this->assertTrue($context->hasGroup('DEFAULT'));
         $this->assertTrue($context->hasGroup('FOO'));
     }
 
     function testVersion() {
         $context = SerializerContext::create();
         $this->assertNull($context->getVersion());
+        $this->assertTrue($context->sinceVersion('1.2.3'));
+        $this->assertTrue($context->untilVersion('1.2.3'));
 
         $context->setVersion('1.2.3');
         $this->assertEquals('1.2.3', $context->getVersion());
@@ -53,11 +55,11 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
     function testCollection() {
         $context = SerializerContext::create();
 
-        $this->assertFalse($context->isInCollection());
-        $context->setInCollection(true);
-        $this->assertTrue($context->isInCollection());
-        $context->setInCollection(false);
-        $this->assertFalse($context->isInCollection());
+//        $this->assertFalse($context->isInCollection());
+//        $context->setInCollection(true);
+//        $this->assertTrue($context->isInCollection());
+//        $context->setInCollection(false);
+//        $this->assertFalse($context->isInCollection());
     }
 
 }

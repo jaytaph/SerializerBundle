@@ -19,8 +19,8 @@ class Html implements OutputAdapterInterface
 
     public function convert(Data $data)
     {
-        $data = $data->compile();
+        $output = $data->compile();
 
-        return new Response(print_r($data, true), Response::HTTP_OK, array('Content-Type' => 'text/html'));
+        return new Response(print_r($output, true), Response::HTTP_OK, array('Content-Type' => 'text/html'));
     }
 }

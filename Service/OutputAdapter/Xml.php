@@ -19,8 +19,8 @@ class Xml implements OutputAdapterInterface
 
     public function convert(Data $data)
     {
-        $data = $data->compile();
+        $output = $data->compile();
 
-        return new Response('XML: '.print_r($data, true), Response::HTTP_OK, array('Content-Type' => 'text/xml'));
+        return new Response('XML: '.print_r($output, true), Response::HTTP_OK, array('Content-Type' => 'text/xml'));
     }
 }

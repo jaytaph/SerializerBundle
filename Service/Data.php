@@ -4,14 +4,34 @@ namespace Noxlogic\SerializerBundle\Service;
 
 class Data
 {
-    protected $state = array();
-    protected $links = array();
-    protected $embedded = array();
-    // protected $curries = array();  // @TODO: not supported
+    /**
+     * Array with all properties (state, _links, _embedded etc)
+     *
+     * @var array
+     */
+    protected $properties = array();
+
+    /**
+     * Always add the `_links`, even when its empty
+     *
+     * @var bool
+     */
+    protected $displayLinks = true;
 
     public static function create()
     {
         return new self();
+    }
+
+    /**
+     *
+     * @param $displayLinks
+     * @return $this
+     */
+    public function alwaysDisplayLinks($displayLinks) {
+        $this->displayLinks = $displayLinks;
+
+        return $this;
     }
 
     /**
@@ -22,11 +42,7 @@ class Data
      */
     public function addState($name, $value)
     {
-//        if ($value instanceof Data) {
-//            $value = $value->compile();
-//        }
-//
-        $this->state[$name] = $value;
+        $this->addEntry('state', $name, $value);
 
         return $this;
     }
@@ -38,26 +54,7 @@ class Data
      */
     public function addEmbedded($name, Data $data)
     {
-        // If we add an embedded collection, we assume you add an array of the collection elements
-        if ($data instanceOf DataCollection) {
-            $data = $data->getElements();
-        }
-
-
-        // Just add the embedded element if it does not exist
-        if (! isset($this->embedded[$name])) {
-            $this->embedded[$name] = $data;
-
-            return $this;
-        }
-
-        // If the element already exist, mak sure it's converted to an array
-        if (! is_array($this->embedded[$name])) {
-            $this->embedded[$name] = array($this->embedded[$name]);
-        }
-
-        // Add the elements
-        $this->embedded[$name] = array_merge($this->embedded[$name], is_array($data) ? $data : array($data));
+        $this->addEntry('embedded', $name, $data);
 
         return $this;
     }
@@ -65,52 +62,120 @@ class Data
     /**
      * @param string $name
      * @param string $href
-     * @param array  $attribs
+     * @param array  $attributes
      *
      * @return $this
      */
-    public function addLink($name, $href, array $attribs = array())
+    public function addLink($name, $href, array $attributes = array())
     {
         $link = array();
         $link['href'] = $href;
-        foreach ($attribs as $k => $v) {
+        foreach ($attributes as $k => $v) {
             $link[$k] = $v;
         }
-        $this->links[$name] = $link;
+
+        $this->addEntry('links', $name, $link);
 
         return $this;
     }
 
+
     /**
+     * Adds a name/value to a certain property of this class. Will add scalar elements, but when arrays are added, or
+     * when multiple value in the same property[name] are stored, it will automatically be converted to an array
+     *
+     * @param $property
+     * @param $value
+     */
+    protected function addEntry($property, $name, $value)
+    {
+        // Property does not exist, create it first
+        if (! isset($this->properties[$property][$name])) {
+            $this->properties[$property][$name] = $value;
+
+            return;
+        }
+
+        // Property is not an array, convert it first
+        if (! is_array($this->properties[$property][$name])) {
+            $this->properties[$property][$name] = array($this->properties[$property][$name]);
+        }
+
+        // Wrap value inside an array if needed
+        if (! is_array($value)) {
+            $value = array($value);
+        }
+
+        // Merge the value(s) to the property
+        $this->properties[$property][$name] = array_merge($this->properties[$property][$name], $value);
+    }
+
+
+    /**
+     * Compile the whole data object (including underlying data objects)
+     *
      * @return array
      */
     public function compile()
     {
-        $output = $this->state;
+        // Always display state elements (even when empty)
+        $output = $this->compileProperty('state');
 
-        foreach ($this->state as $name => $resource) {
-            if (is_array($resource)) {
-                foreach ($resource as $element) {
-                    $output[$name][] = $element->compile();
-                }
-            } else {
-                $output[$name] = $resource->compile();
-            }
+        // Display links elements when available or when forced
+        $linksOutput = $this->compileProperty('links');
+        if ($linksOutput || $this->displayLinks) {
+            $output['_links'] = $linksOutput;
         }
 
+        // Display embedded elements when available
+        $embeddedOutput = $this->compileProperty('embedded');
+        if ($embeddedOutput) {
+            $output['_embedded'] = $embeddedOutput;
+        }
 
-        $output['_links'] = $this->links;
+        return $output;
+    }
 
-        foreach ($this->embedded as $name => $resource) {
+    /**
+     * Compile a property array (embedded, links, state etc) into a completely compiled array
+     *
+     * @param $property
+     * @return array
+     */
+    function compileProperty($property)
+    {
+        $output = array();
+
+        if (! isset($this->properties[$property])) {
+            return array();
+        }
+
+        foreach ($this->properties[$property] as $name => $resource) {
             if (is_array($resource)) {
-                foreach ($resource as $element) {
-                    $output['_embedded'][$name][] = $element->compile();
+                foreach ($resource as $key => $element) {
+                    $output[$name][$key] = $this->getElementValue($element);
                 }
             } else {
-                $output['_embedded'][$name] = $resource->compile();
+                $output[$name] = $this->getElementValue($resource);
             }
         }
 
         return $output;
     }
+
+    /**
+     * Returns either direct element, or when it's a Data object, it's compiled value
+     *
+     * @param $element
+     * @return array
+     */
+    protected function getElementValue($element)
+    {
+        if ($element instanceof Data) {
+            return $element->compile();
+        }
+
+        return $element;
+    }
+
 }

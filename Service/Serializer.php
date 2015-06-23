@@ -3,15 +3,19 @@
 namespace Noxlogic\SerializerBundle\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Collections\Collection;
-use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
+use Noxlogic\SerializerBundle\Service\NodeHandler as NodeHandlers;
+use Noxlogic\SerializerBundle\Service\NodeHandler\NodeHandler;
 use Noxlogic\SerializerBundle\Service\OutputAdapter\OutputAdapterInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class Serializer
 {
+    /**
+     * Loaded output adapters
+     *
+     * @var array
+     */
     protected $outputAdapters = array();
 
     /**
@@ -29,6 +33,11 @@ class Serializer
      */
     protected $container;
 
+    /**
+     * @var nodeHandler[]
+     */
+    protected $nodeHandlers;
+
 
     /**
      * @param Registry $registry
@@ -40,6 +49,29 @@ class Serializer
         $this->em = $registry->getManager();
         $this->router = $router;
         $this->container = $container;
+
+        $this->addNodeHandler(new NodeHandlers\DoctrineEntity(), 255);
+        $this->addNodeHandler(new NodeHandlers\PagerFantaWrapper(), 0);
+        $this->addNodeHandler(new NodeHandlers\Collection(), 0);
+        $this->addNodeHandler(new NodeHandlers\DateTime(), 0);
+        $this->addNodeHandler(new NodeHandlers\Scalar(), -255);
+    }
+
+    /**
+     * Adds an additional node handler on the given priority (higher the earlier matching)
+     *
+     * @param NodeHandler $handler
+     * @param int $priority
+     */
+    public function addNodeHandler(NodeHandler $handler, $priority = 0)
+    {
+        if (! isset($this->nodeHandlers[$priority])) {
+            $this->nodeHandlers[$priority] = array();
+        }
+
+        $this->nodeHandlers[$priority][] = $handler;
+
+        krsort($this->nodeHandlers);
     }
 
     /**
@@ -102,125 +134,19 @@ class Serializer
     }
 
     /**
-     * @param $data
-     * @param SerializerContext $context
-     *
-     * @return DataCollection
+     * @return RouterInterface
      */
-    public function serializeCollection($name, PagerFantaWrapper $wrapper, SerializerContext $context)
+    public function getRouter()
     {
-        $collection = DataCollection::create();
-
-        $collection->addLink('self', $wrapper->getCurrentPage());
-
-        if ($wrapper->hasPreviousPage()) {
-            $collection->addLink('prev', $wrapper->getPreviousPage());
-        }
-        if ($wrapper->hasNextPage()) {
-            $collection->addLink('next', $wrapper->getNextPage());
-        }
-        $collection->addState('count', $wrapper->getTotal());
-        $collection->addState('pages', $wrapper->getPageCount());
-
-
-        // We are inside a collection. We might want a different layout.
-        $inCollection = $context->isInCollection();
-        $context->setInCollection(true);
-
-        foreach ($wrapper->getPager()->getCurrentPageResults() as $item) {
-            $element = $this->_serialize($item, $context, $this);
-            $collection->addEmbedded($name, $element);
-        }
-        $context->setInCollection($inCollection);
-
-
-        return $collection;
-    }
-
-    public function serializeArray(array $elements, SerializerContext $context)
-    {
-        $collection = DataCollection::create();
-
-        $collection->addState('count', count($elements));
-
-        foreach ($elements as $item) {
-            // Don't treat array elements as collections
-            $inCollection = $context->isInCollection();
-            $context->setInCollection(false);
-
-            $element = $this->_serialize($item, $context, $this);
-            $collection->addElement($element);
-
-            $context->setInCollection($inCollection);
-        }
-
-        return $collection;
+        return $this->router;
     }
 
     /**
-     * @param $element
-     * @param SerializerContext $context
-     *
-     * @return Data
+     * @return ContainerInterface
      */
-    protected function serializeElement($element, SerializerContext $context)
+    public function getContainer()
     {
-        // Might be a doctrine proxy class. Make sure we get the actual class
-        $className = \Doctrine\Common\Util\ClassUtils::getClass($element);
-
-        // Check if we need to load the mapping through a service. This is useful when the mapping needs dependencies like doctrine or others.
-
-        // If it's an entity, convert into a mapping class name
-        if (strpos($className, '\\Entity\\') !== false) {
-            $className = str_replace('\\Entity\\', '\\Mapping\\', $className) . 'Mapping';
-        }
-
-        // Check if it exists
-        if (!class_exists($className)) {
-            throw new \InvalidArgumentException("Mapping $className does not exist");
-        }
-
-        // Check if the mapping class implements our needed interface
-        $mapping = new $className();
-
-        if (!$mapping instanceof SerializerMapping) {
-            throw new \InvalidArgumentException("Mapping class $className must implement the SerializerMapping interface");
-        }
-
-        if ($mapping instanceof ContainerAwareInterface) {
-            $mapping->setContainer($this->container);
-        }
-
-        if ($context->isInCollection()) {
-            $data = $mapping->collection($context, $this->router, $element, $this);
-        } else {
-            $data = $mapping->entity($context, $this->router, $element, $this);
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param $element
-     * @param SerializerContext $context
-     *
-     * @return Data|DataCollection
-     */
-    protected function _serialize($element, SerializerContext $context)
-    {
-        if (is_array($element)) {
-            return $this->serializeArray($element, $context);
-        }
-
-        if ($element instanceof Collection) {
-            return $this->serializeArray($element->toArray(), $context);
-        }
-
-        if ($element instanceof PagerFantaWrapper) {
-            return $this->serializeCollection($element->getElementName(), $element, $context);
-        }
-
-        return $this->serializeElement($element, $context);
+        return $this->container;
     }
 
     /**
@@ -229,11 +155,28 @@ class Serializer
      * @param mixed             $element
      * @param SerializerContext $context
      *
-     * @return Data|DataCollection
+     * @return Data
      */
     public function serialize($element, SerializerContext $context)
     {
-        return $this->_serialize($element, $context);
+        $data = null;
+
+        // Iterate each handler in priority until one can handle it
+        foreach ($this->nodeHandlers as $priority => $handlers) {
+            foreach ($handlers as $handler) {
+                $data = $handler->handle($element, $this, $context);
+
+                if ($data !== null) {
+                    break 2;
+                }
+            }
+        }
+
+        if ($data == null) {
+            throw new \LogicException('Cannot handle unknown element type');
+        }
+
+        return $data;
     }
 
     /**
@@ -249,4 +192,5 @@ class Serializer
 
         return $outputAdapter->convert($data);
     }
+
 }

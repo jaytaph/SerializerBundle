@@ -27,6 +27,22 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $output['_links']);
     }
 
+    function testArrayStates() {
+        $data = Data::create()
+            ->addState('first', 'post')
+            ->addState('root', 'up')
+            ->addState('root', 'and down')
+        ;
+        $output = $data->compile();
+
+        $this->assertEquals($output['first'], 'post');
+        $this->assertCount(2, $output['root']);
+        $this->assertEquals($output['root'][0], 'up');
+        $this->assertEquals($output['root'][1], 'and down');
+
+        $this->assertCount(0, $output['_links']);
+    }
+
     function testComplexLinkCompilation() {
         $data = Data::create();
 
@@ -52,24 +68,32 @@ class DataTest extends \PHPUnit_Framework_TestCase
 
     function testComplexEmbedCompilation() {
 
-        $data2 = Data::create();
-        $data2->addState('deep', 'down');
+        $data2 = Data::create()
+            ->addState('deep', 'down')
+        ;
 
-        $data1 = Data::create();
-        $data1->addState('foo', 'bar');
-        $data1->addLink('l2', 'http://www.reddit.com');
-        $data1->addEmbedded('e2', $data2);
+        $data1 = Data::create()
+            ->addState('foo', 'bar')
+            ->addLink('l2', 'http://www.reddit.com')
+            ->addEmbedded('e2.1', $data2)
+        ;
 
-        $data = Data::create();
-        $data->addLink('l1', 'http://www.google.com');
-        $data->addEmbedded('e1', $data1);
+        $data = Data::create()
+            ->addLink('l1', 'http://www.google.com', array('rel' => 'relation'))
+            ->addEmbedded('e1.1', $data1)
+            ->addEmbedded('e1.2', $data2)
+            ->addEmbedded('e1.2', $data1)
+        ;
 
         $output = $data->compile();
 
         $this->assertCount(1, $output['_links']);
+        $this->assertEquals($output['_links']['l1']['href'], 'http://www.google.com');
+        $this->assertEquals($output['_links']['l1']['rel'], 'relation');
 
-        $this->assertEquals('down', $output['_embedded']['e1']['_embedded']['e2']['deep']);
-        $this->assertEquals('http://www.reddit.com', $output['_embedded']['e1']['_links']['l2']['href']);
+        $this->assertEquals('down', $output['_embedded']['e1.1']['_embedded']['e2.1']['deep']);
+        $this->assertEquals('down', $output['_embedded']['e1.2'][0]['deep']);
+        $this->assertEquals('http://www.reddit.com', $output['_embedded']['e1.1']['_links']['l2']['href']);
     }
 
     function testAddState() {
@@ -79,16 +103,37 @@ class DataTest extends \PHPUnit_Framework_TestCase
         $output = $data->compile();
         $this->assertArraySubset(array('foo' => 'bar', '_links' => array()), $output);
 
-
         $data1 = Data::create();
         $data1->addState('bar', 'baz');
 
         $data2 = Data::create();
         $data2->addState('foo', $data1);
 
-        print_r($data2);
         $output = $data2->compile();
-        print_r($output);
         $this->assertArraySubset(array('foo' => array('bar' => 'baz', '_links' => array()), '_links' => array()), $output);
     }
+
+    function testDisplayLinks() {
+        $data = Data::create()
+            ->addState('foo', 'bar')
+        ;
+        $output = $data->compile();
+        $this->assertArrayHasKey('_links', $output);
+
+        $data = Data::create()
+            ->alwaysDisplayLinks(false)
+            ->addState('foo', 'bar')
+        ;
+        $output = $data->compile();
+        $this->assertArrayNotHasKey('_links', $output);
+
+        $data = Data::create()
+            ->alwaysDisplayLinks(false)
+            ->addState('foo', 'bar')
+            ->addLink('self', 'http://www.google.com')
+        ;
+        $output = $data->compile();
+        $this->assertArrayHasKey('_links', $output);
+    }
+
 }

@@ -19,8 +19,11 @@ class JsonHal implements OutputAdapterInterface
 
     public function convert(Data $data)
     {
-        $data = $data->compile();
+        $output = $data->compile();
 
-        return new JsonResponse($data);
+        $response = new JsonResponse($output);
+        $response->headers->set('Content-Type', 'application/hal+json');
+
+        return $response;
     }
 }
