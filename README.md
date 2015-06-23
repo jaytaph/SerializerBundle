@@ -12,9 +12,9 @@ Serializer bundle
 [![Total downloads](https://img.shields.io/packagist/dt/noxlogic/serializer-bundle.svg)](https://packagist.org/packages/noxlogic/serializer-bundle)
 
 [![Latest Stable Version](https://poser.pugx.org/noxlogic/serializer-bundle/v/stable.svg)](https://packagist.org/packages/noxlogic/serializer-bundle) 
-[![Total Downloads](https://poser.pugx.org/noxlogic/ratelimit-bundle/downloads.svg)](https://packagist.org/packages/noxlogic/ratelimit-bundle) 
-[![Latest Unstable Version](https://poser.pugx.org/noxlogic/ratelimit-bundle/v/unstable.svg)](https://packagist.org/packages/noxlogic/ratelimit-bundle) 
-[![License](https://poser.pugx.org/noxlogic/ratelimit-bundle/license.svg)](https://packagist.org/packages/noxlogic/serializer-bundle)
+[![Total Downloads](https://poser.pugx.org/noxlogic/serializer-bundle/downloads.svg)](https://packagist.org/packages/noxlogic/serializer-bundle) 
+[![Latest Unstable Version](https://poser.pugx.org/noxlogic/serializer-bundle/v/unstable.svg)](https://packagist.org/packages/noxlogic/serializer-bundle) 
+[![License](https://poser.pugx.org/noxlogic/serializer-bundle/license.svg)](https://packagist.org/packages/noxlogic/serializer-bundle)
 
 
 A serializer bundle, inspired by the JMSSerializer and HateoasBundle.
@@ -33,13 +33,10 @@ needs first.
 
 * Install through composer:
 
-<pre><code>
     php composer.phar require "noxlogic/serializer-bundle"
-</code></pre>
 
 * Add the bundle to your `AppKernel.php`:
 
-<pre><code>
     class AppKernel extends Kernel
     {
         public function registerBundles()
@@ -49,21 +46,18 @@ needs first.
                 new Noxlogic\SerializerBundle\NoxlogicSerializerBundle(),
                 ...
             );
-</code></pre>
 
 # Usage
 
 Once installed, the bundle is ready to run. In your controller:
 
-<pre><code>
-function indexAction() {
-    $element = new \DateTime();
+    function indexAction() {
+        $element = new \DateTime();
     
-    $serializer = $this->get('noxlogic.serializer');
-    $data = $serializer->serializer($element);
-    return $serializer->createResponse($data, 'json');
-}
-</code></pre>
+        $serializer = $this->get('noxlogic.serializer');
+        $data = $serializer->serializer($element);
+        return $serializer->createResponse($data, 'json');
+    }
 
 This will simply output the time as a string within json. But obviously, you want more complex serialization.
 
@@ -72,61 +66,56 @@ We assume you have a simple entity in `DefaultBundle\Entity\User` which holds (a
 We create a mapping file that maps fields from the entity to a more generic structure that can be converted to our 
 output.
 
-<pre><code>
-<?php
-
-namespace defaultBundle\Mapping;
-
-use Noxlogic\SerializerBundle\Service\Data;
-use Noxlogic\SerializerBundle\Service\Serializer;
-use Noxlogic\SerializerBundle\Service\SerializerContext;
-use Noxlogic\SerializerBundle\Service\SerializerMapping;
-use DefaultBundle\SerializerBundle\Entity\User;
-
-
-class UserMapping implement SerializerMapping 
-{
-    public function mapping($entity, Serializer $serializer, SerializerContext $context)
+    <?php
+    
+    namespace defaultBundle\Mapping;
+    
+    use Noxlogic\SerializerBundle\Service\Data;
+    use Noxlogic\SerializerBundle\Service\Serializer;
+    use Noxlogic\SerializerBundle\Service\SerializerContext;
+    use Noxlogic\SerializerBundle\Service\SerializerMapping;
+    use DefaultBundle\SerializerBundle\Entity\User;
+    
+    
+    class UserMapping implement SerializerMapping 
     {
-        /* @var User $entity */
-        return Data::create()
-            ->addState('firstname', $entity->getFirstName())
-            ->addState('lastname', $entity->getLastName())
-            ->addState('fullname', $entity->getFirstName().' '.$entity->getLastName())
-            ->addLink('self', 'http://www.google.com')
-        ;
+        public function mapping($entity, Serializer $serializer, SerializerContext $context)
+        {
+            /* @var User $entity */
+            return Data::create()
+                ->addState('firstname', $entity->getFirstName())
+                ->addState('lastname', $entity->getLastName())
+                ->addState('fullname', $entity->getFirstName().' '.$entity->getLastName())
+                ->addLink('self', 'http://www.google.com')
+            ;
+        }
     }
-}
-</code></pre>
 
 Now, all we need to do is add a user element to the serializer:
 
-<pre><code>
-function indexAction() {
-    $user = new User();
-    $user->setFirstName('john');
-    $user->setLastName('doe');
-    
-    $serializer = $this->get('noxlogic.serializer');
-    $data = $serializer->serializer($user);
-    return $serializer->createResponse($data, 'json');
-}
-</code></pre>
+    function indexAction() {
+        $user = new User();
+        $user->setFirstName('john');
+        $user->setLastName('doe');
+        
+        $serializer = $this->get('noxlogic.serializer');
+        $data = $serializer->serializer($user);
+        return $serializer->createResponse($data, 'json');
+    }
 
 This will output a JSON response object with firstname, lastname and fullname, including a link to google.com:
 
-<pre><code>
-{
-    "firstname": "john",
-    "lastname": "doe",
-    "fullname": "john doe",
-    "_links": {
-        "self": {
-            "href": "http:\/\/www.google.com"
+
+    {
+        "firstname": "john",
+        "lastname": "doe",
+        "fullname": "john doe",
+        "_links": {
+            "self": {
+                "href": "http:\/\/www.google.com"
+            }
         }
     }
-}
-</code></pre>
 
 At this point it's quite easy to create complex mappings, collections (paged, doctrinecollections or simple arrays) of 
 entities etc.
@@ -144,58 +133,56 @@ bandwidth, but also by low bandwidth systems like mobile apps that only want to 
 The previous example is done through "grouping". By default, a serializerContext has a "default" group, which cannot be 
 removed. It's possible to add more groups, and return information based on those groups.
 
-<pre><code>
-function indexAction(User $user) {
-    $serializer = $this->get('noxlogic.serializer');
-    return $serializer->createResponse($user, 'json');
-    
-    /*
-    {
-        "firstname": "john",
-        "lastname": "doe",
-        "_links": {
-            "self": {
-                "href": "http:\/\/api.example.org/user/johndoe"
+    function indexAction(User $user) {
+        $serializer = $this->get('noxlogic.serializer');
+        return $serializer->createResponse($user, 'json');
+        
+        /*
+        {
+            "firstname": "john",
+            "lastname": "doe",
+            "_links": {
+                "self": {
+                    "href": "http:\/\/api.example.org/user/johndoe"
+                }
             }
         }
+        */
     }
-    */
-}
-</code></pre>
 
-<pre><code>
-function indexAction(User $user) {
-    $context = SerializerContext::create()
-        ->addGroup('admin')
-    ;
+and with an additional group:
 
-    $serializer = $this->get('noxlogic.serializer');
-    $data = $serializer->serializer($element);
-    return $serializer->createResponse($data, 'json');
+    function indexAction(User $user) {
+        $context = SerializerContext::create()
+            ->addGroup('admin')
+        ;
     
-    /*
-    {
-        "firstname": "john",
-        "lastname": "doe",
-        "roles": {
-            "ROLE_USER",
-            "ROLE_MANAGER",
-        },
-        "_links": {
-            "self": {
-                "href": "http:\/\/api.example.org/user/johndoe"
+        $serializer = $this->get('noxlogic.serializer');
+        $data = $serializer->serializer($element);
+        return $serializer->createResponse($data, 'json');
+        
+        /*
+        {
+            "firstname": "john",
+            "lastname": "doe",
+            "roles": {
+                "ROLE_USER",
+                "ROLE_MANAGER",
+            },
+            "_links": {
+                "self": {
+                    "href": "http:\/\/api.example.org/user/johndoe"
+                }
             }
         }
+        */
     }
-    */
-}
-</code></pre>
 
 In this example, when adding the `admin` group to the context, it will return additional information, `roles` in this case. 
 
 The `mapping()` method in the `UserMapping` class would look something like this:
 
-<pre><code>
+
     public function mapping($entity, Serializer $serializer, SerializerContext $context)
     {
         /* @var User $entity */
@@ -212,7 +199,6 @@ The `mapping()` method in the `UserMapping` class would look something like this
         
         return $data;
     }
-</code></pre>
 
 
 
@@ -221,19 +207,17 @@ When your API evolves, it might be possible that some elements will be added or 
 possible to just remove them from your mapping in order to make sure that older clients won't break. For this, you can 
 use the versioning feature of the context:
   
-<pre><code>
-  function indexAction(User $user) {
-      $context = SerializerContext::create()
-          ->setVersion('1.2.3')
-      ;
-/code></pre>
+
+   function indexAction(User $user) {
+       $context = SerializerContext::create()
+           ->setVersion('1.2.3')
+       ;
 
 Normally, this version information should be taken from the request like the `Accept` header, for instance, or maybe even 
 from the URL: (ie: `http://example.org/api/v1.2.3/...`).
 
 Now you can adjust your mapping dynamically based on the given version:
 
-<pre><code>
     public function mapping($entity, Serializer $serializer, SerializerContext $context)
     {
         /* @var User $entity */
@@ -253,7 +237,6 @@ Now you can adjust your mapping dynamically based on the given version:
         
         return $data;
     }
-</code></pre>
 
 In this example, the 'maiden_name' element is available since version `1.2.0`. Any clients requesting a version below 
 this, will not receive this element. Also, the `fullname` is available until version `2.0.0`, excluding version `2.0.0` 
@@ -279,23 +262,23 @@ Once a node handler handles a node, no other node handlers will be tried.
 ### Scalars
 All scalar elements (when returned `true` by `is_scalar()`) are mapped directly as-is. 
 
-<pre><code>
+
     $context = new SerializerContext();
     $data = $serializer->serialize('foobar', $context);
     var_dump($data);
     // string(6) "foobar"
-</code></pre>
+
     
 ### DateTime
 DateTime and DateTimeImmutable objects, basically, anything implementing a `DateTimeInterface`, will be converted to
 an iso 8601 format.
 
-<pre><code>
+
     $context = new SerializerContext();
     $data = $serializer->serialize(new \DateTime(), $context);
     var_dump($data);
     // string(6) "2015-02-03T12:34:56+0100"
-</code></pre>
+
 
 ### Collections
 A collection is anything that implements `\Traversable` or an `array`. It returns an array of `elements`, with an 
@@ -303,7 +286,7 @@ A collection is anything that implements `\Traversable` or an `array`. It return
 themselves are serialized again, so they do not have to be scalars, but can be other object-type elements, and even 
 collections (for multi-dimensional collections).
 
-<pre><code>
+
      $context = new SerializerContext();
      $data = $serializer->serialize(array('foo', 'bar', 'baz'), $context);
      var_dump($data);
@@ -319,9 +302,9 @@ collections (for multi-dimensional collections).
              )
      )
      */
-</code></pre>
 
-<pre><code>
+And with a multi-dimensional array:
+
      $context = new SerializerContext();
      $data = $serializer->serialize(array('foo', array(1,2,3), 'baz', $context);
      $output = $data->compile();
@@ -347,7 +330,6 @@ collections (for multi-dimensional collections).
              )
      )
      */
-</code></pre>
 
 
 ### Doctrine entity mappings
@@ -370,7 +352,7 @@ Each mapping file should implement the `SerializerMapping` interface. The mappin
 simple `mapping()` method that will convert the given entity into either a `Data` structure for compound elements (most 
 likely on objects), or even a single scalar if needed.
 
-<pre><code>
+
     class UserMapping implements SerializerMapping {
     
         public function mapping($entity, Serializer $serializer, SerializerContext $context)
@@ -384,7 +366,6 @@ likely on objects), or even a single scalar if needed.
         }
     
     }
-</code></pre>
 
 
 ### Pagerfanta collections 
@@ -417,9 +398,7 @@ and the limit of elements per page (ie: `http://my.tld/users?page=2&limit=10`). 
 the array name in the `Data` structure. It will default to `elements` if none is given, but often a more descriptive 
 name like `users` or `blogposts` is desirable.
 
-
-<pre><code>
-    
+   
     // assuming that `route_to_collection` resolves to: http://example.org/alphabet
     $routing = new CollectionRouting('route_to_collection', array('sort' => 'asc'));
     // We must connect our router to the CollectionRouting manually
@@ -471,8 +450,6 @@ name like `users` or `blogposts` is desirable.
     )
     */
    
-</code></pre>
-
 
 
 
@@ -484,10 +461,10 @@ around converting to `HAL-JSON` format, although it should be trivial to add dif
 Normally, the output adapter by themselves will just return object a `Response` object with all nessecary settings 
 (content-type, body etc). 
 
-<pre><code>
+
     $data = $serializer->serialize($user);
     $response = $serializer->createResponse($data, 'json');
-</code></pre>
+
 
 
 ## Adding output adapters
