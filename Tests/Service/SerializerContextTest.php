@@ -28,6 +28,10 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($context->hasGroup('default'));
         $this->assertTrue($context->hasGroup('DEFAULT'));
         $this->assertTrue($context->hasGroup('FOO'));
+
+        $context->addGroup('baz');
+        $this->assertTrue($context->hasGroup('FOO'));
+        $this->assertTrue($context->hasGroup('baz'));
     }
 
     function testVersion() {

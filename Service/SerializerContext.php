@@ -41,6 +41,17 @@ class SerializerContext
         return $this;
     }
 
+
+    /**
+     * @param $group
+     * @return $this
+     */
+    public function addGroup($group) {
+        $this->groups[] = strtoupper($group);
+
+        return $this;
+    }
+
     /**
      * Return the current version
      *

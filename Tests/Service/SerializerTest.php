@@ -3,12 +3,17 @@
 namespace Noxlogic\SerializerBundle\Tests\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Noxlogic\SerializerBundle\Service\Collection\CollectionRouting;
+use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
 use Noxlogic\SerializerBundle\Service\Data;
+use Noxlogic\SerializerBundle\Service\NodeHandler\Scalar;
 use Noxlogic\SerializerBundle\Service\OutputAdapter\Html;
 use Noxlogic\SerializerBundle\Service\OutputAdapter\JsonHal;
 use Noxlogic\SerializerBundle\Service\OutputAdapter\Xml;
 use Noxlogic\SerializerBundle\Service\Serializer;
 use Noxlogic\SerializerBundle\Service\SerializerContext;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -116,5 +121,33 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->serializer->getContainer(), $this->mockContainer);
         $this->assertEquals($this->serializer->getRouter(), $this->mockRouter);
     }
+
+
+    function priorityDataProvider()
+    {
+        return array(
+            array(-256),
+            array(256),
+        );
+    }
+
+    /**
+     * @param $priority
+     *
+     * @dataProvider priorityDataProvider
+     * @expectedException \LogicException
+     */
+    function testPriorityOfNodeAdapters($priority)
+    {
+        $this->serializer->addNodeHandler(new Scalar(), $priority);
+    }
+
+    function testSerializerWithoutContext()
+    {
+        $output = $this->serializer->serialize('foobar');
+
+        $this->assertEquals($output, 'foobar');
+    }
+
 
 }

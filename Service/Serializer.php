@@ -65,6 +65,12 @@ class Serializer
      */
     public function addNodeHandler(NodeHandler $handler, $priority = 0)
     {
+        $priority = (int)$priority;
+
+        if ($priority < -255 || $priority > 255) {
+            throw new \LogicException("Priority should be between -255 and 255");
+        }
+
         if (! isset($this->nodeHandlers[$priority])) {
             $this->nodeHandlers[$priority] = array();
         }
@@ -157,8 +163,12 @@ class Serializer
      *
      * @return Data
      */
-    public function serialize($element, SerializerContext $context)
+    public function serialize($element, SerializerContext $context = null)
     {
+        if ($context == null) {
+            $context = SerializerContext::create();
+        }
+
         $data = null;
 
         // Iterate each handler in priority until one can handle it
