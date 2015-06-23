@@ -57,14 +57,4 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($context->untilVersion('1.2.0'));
     }
 
-    public function testCollection()
-    {
-        $context = SerializerContext::create();
-
-//        $this->assertFalse($context->isInCollection());
-//        $context->setInCollection(true);
-//        $this->assertTrue($context->isInCollection());
-//        $context->setInCollection(false);
-//        $this->assertFalse($context->isInCollection());
-    }
 }

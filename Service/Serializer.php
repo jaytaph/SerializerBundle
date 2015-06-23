@@ -97,8 +97,9 @@ class Serializer
     public function removeOutputAdapter($name)
     {
         if (!isset($this->outputAdapters[$name])) {
-            throw new \InvalidArgumentException("Adapter '$name' not loaded");
+            throw new \InvalidArgumentException("Output adapter '$name' not loaded");
         }
+
         unset($this->outputAdapters[$name]);
     }
 
@@ -182,7 +183,6 @@ class Serializer
         }
 
         if ($data == null) {
-            var_dump($element);
             throw new \LogicException('Cannot handle unknown element type');
         }
 

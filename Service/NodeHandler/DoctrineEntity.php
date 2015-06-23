@@ -39,11 +39,7 @@ class DoctrineEntity implements NodeHandler
             throw new \InvalidArgumentException("Mapping class $mappingClassName must implement the SerializerMapping interface");
         }
 
-//        if ($context->isInCollection()) {
-//            $data = $mapping->collection($context, $this->router, $element, $this);
-//        } else {
-            $data = $mapping->mapping($element, $serializer, $context);
-//        }
+        $data = $mapping->mapping($element, $serializer, $context);
 
         return $data;
     }

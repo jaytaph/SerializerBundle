@@ -1,6 +1,22 @@
 Serializer bundle
 -----------------
 
+
+[![Build Status](https://travis-ci.org/jaytaph/SerializerBundle.svg?branch=1.x)](https://travis-ci.org/jaytaph/SerializerBundle)
+[![Build Status](https://scrutinizer-ci.com/g/jaytaph/SerializerBundle/badges/build.png?b=1.x)](https://scrutinizer-ci.com/g/jaytaph/SerializerBundle/build-status/1.x)
+[![Code Coverage](https://scrutinizer-ci.com/g/jaytaph/SerializerBundle/badges/coverage.png?b=1.x)](https://scrutinizer-ci.com/g/jaytaph/SerializerBundle/?branch=1.x)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jaytaph/SerializerBundle/badges/quality-score.png?b=1.x)](https://scrutinizer-ci.com/g/jaytaph/SerializerBundle/?branch=1.x)
+
+[![Daily downloads](https://img.shields.io/packagist/dd/noxlogic/serializer-bundle.svg)](https://packagist.org/packages/noxlogic/serializer-bundle)
+[![Monthly downloads](https://img.shields.io/packagist/dm/noxlogic/serializer-bundle.svg)](https://packagist.org/packages/noxlogic/serializer-bundle)
+[![Total downloads](https://img.shields.io/packagist/dt/noxlogic/serializer-bundle.svg)](https://packagist.org/packages/noxlogic/serializer-bundle)
+
+[![Latest Stable Version](https://poser.pugx.org/noxlogic/serializer-bundle/v/stable.svg)](https://packagist.org/packages/noxlogic/serializer-bundle) 
+[![Total Downloads](https://poser.pugx.org/noxlogic/ratelimit-bundle/downloads.svg)](https://packagist.org/packages/noxlogic/ratelimit-bundle) 
+[![Latest Unstable Version](https://poser.pugx.org/noxlogic/ratelimit-bundle/v/unstable.svg)](https://packagist.org/packages/noxlogic/ratelimit-bundle) 
+[![License](https://poser.pugx.org/noxlogic/ratelimit-bundle/license.svg)](https://packagist.org/packages/noxlogic/serializer-bundle)
+
+
 A serializer bundle, inspired by the JMSSerializer and HateoasBundle.
 
 Simpler in design, as we don't need a lot of features, but most importantly,

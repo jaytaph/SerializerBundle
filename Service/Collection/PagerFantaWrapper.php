@@ -16,6 +16,7 @@ class PagerFantaWrapper
     protected $routing;
     protected $pageName;
     protected $limitName;
+    protected $elementName;
 
     public function __construct(Pagerfanta $pager, CollectionRouting $routing, $pageName = 'page', $limitName = 'limit', $elementName = 'elements')
     {
