@@ -182,6 +182,7 @@ class Serializer
         }
 
         if ($data == null) {
+            var_dump($element);
             throw new \LogicException('Cannot handle unknown element type');
         }
 

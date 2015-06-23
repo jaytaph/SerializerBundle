@@ -52,11 +52,11 @@ class DateTimeTest extends \PHPUnit_Framework_TestCase
         $context = new SerializerContext();
 
         $node = new DateTime();
-        $data = $node->handle(new \DateTime('2015-07-09 12:34:56', new \DateTimeZone('CET')), $this->serializer, $context);
-        $this->assertEquals($data, '2015-07-09T12:34:56+0200');
+        $data = $node->handle(new \DateTime('2015-07-09 12:34:56', new \DateTimeZone('Europe/Berlin')), $this->serializer, $context);
+        $this->assertEquals('2015-07-09T12:34:56+0200', $data);
 
         $node = new DateTime();
-        $data = $node->handle(new \DateTime('2015-07-09 12:34:56', new \DateTimeZone('PST')), $this->serializer, $context);
-        $this->assertEquals($data, '2015-07-09T12:34:56-0700');
+        $data = $node->handle(new \DateTime('2015-07-09 12:34:56', new \DateTimeZone('America/New_York')), $this->serializer, $context);
+        $this->assertEquals('2015-07-09T12:34:56-0400', $data);
     }
 }

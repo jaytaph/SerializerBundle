@@ -84,9 +84,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $context = new SerializerContext();
 
         $collection = new \DatePeriod(
-            new \DateTime('01-01-2015', new \DateTimeZone('CET')),
+            new \DateTime('01-01-2015', new \DateTimeZone('Europe/Berlin')),
             new \DateInterval('P1M'),
-            new \DateTime('01-01-2016', new \DateTimeZone('CET'))
+            new \DateTime('01-01-2016', new \DateTimeZone('Europe/Berlin'))
         );
 
         $node = new Collection();

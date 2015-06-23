@@ -21,6 +21,6 @@ class Html implements OutputAdapterInterface
     {
         $output = $data->compile();
 
-        return new Response(print_r($output, true), Response::HTTP_OK, array('Content-Type' => 'text/html'));
+        return new Response(print_r($output, true), 200, array('Content-Type' => 'text/html'));
     }
 }
