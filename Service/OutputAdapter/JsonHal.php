@@ -22,7 +22,7 @@ class JsonHal implements OutputAdapterInterface
         $output = $data->compile();
 
         $response = new JsonResponse($output);
-        $response->headers->set('Content-Type', 'application/hal+json');
+        $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
