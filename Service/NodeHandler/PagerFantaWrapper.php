@@ -40,7 +40,11 @@ class PagerFantaWrapper implements NodeHandler
         //$elements = array();
         foreach ($wrapper->getPager()->getCurrentPageResults() as $element) {
             $embeddedData = $serializer->serialize($element, $context);
-            $data->addEmbedded($wrapper->getElementName(), $embeddedData);
+            if ($embeddedData instanceOf Data) {
+                $data->addEmbedded($wrapper->getElementName(), $embeddedData);
+            } else {
+                $data->addState($wrapper->getElementName(), $embeddedData);
+            }
         }
 
         return $data;

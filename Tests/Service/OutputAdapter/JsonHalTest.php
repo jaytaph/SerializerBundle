@@ -39,7 +39,7 @@ class JsonHalTest extends \PHPUnit_Framework_TestCase
         $adapter = new JsonHal();
         $response = $adapter->convert($data);
 
-        $this->assertEquals($response->headers->get('Content-Type'), 'application/hal+json');
+        $this->assertEquals($response->headers->get('Content-Type'), 'application/json');
         $this->assertEquals($response->getContent(), '{"_links":{"l1":{"href":"http:\/\/www.google.com"}},"_embedded":{"e1":{"foo":"bar","_links":{"l2":{"href":"http:\/\/www.reddit.com"}},"_embedded":{"e2":{"deep":"down","_links":[]}}}}}');
     }
 }
