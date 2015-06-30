@@ -43,18 +43,10 @@ class PagerFantaWrapper implements NodeHandler
             $embeddedData = $serializer->serialize($element, $context);
 
             if ($embeddedData instanceOf Data) {
-                $embeds[] = $embeddedData;
+                $data->addEmbedded($wrapper->getElementName(), $embeddedData, true);
             } else {
-                $states[] = $embeddedData;
+                $data->addState($wrapper->getElementName(), $embeddedData, true);
             }
-        }
-
-        // We add them at the end to make sure we are always an array, even when we only have one element.
-        if (count($embeds)) {
-            $data->addEmbedded($wrapper->getElementName(), $embeds);
-        }
-        if (count($states)) {
-            $data->addState($wrapper->getElementName(), $states);
         }
 
 

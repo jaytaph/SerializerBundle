@@ -41,9 +41,9 @@ class Data
      *
      * @return $this
      */
-    public function addState($name, $value)
+    public function addState($name, $value, $forceArray = false)
     {
-        $this->addEntry('state', $name, $value);
+        $this->addEntry('state', $name, $value, $forceArray);
 
         return $this;
     }
@@ -89,6 +89,11 @@ class Data
      */
     protected function addEntry($property, $name, $value, $forceArray = false)
     {
+        // Make sure we are an array, or encapsulated inside an array
+        if ($forceArray && !is_array($value)) {
+            $value = array($value);
+        }
+
         // Property does not exist, create it first
         if (!isset($this->properties[$property][$name])) {
             $this->properties[$property][$name] = $value;
