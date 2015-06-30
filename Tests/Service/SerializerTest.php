@@ -76,7 +76,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $data = Data::create()
                 ->addState('foo', 'bar')
                 ->addLink('self', 'https://www.google.com');
-        $response = $this->serializer->createResponse($data, 'json-hal');
+        $response = $this->serializer->createResponse($data, 'json');
 
         $this->assertInstanceOf('\Symfony\Component\HttpFoundation\Response', $response);
     }

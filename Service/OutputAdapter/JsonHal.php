@@ -9,12 +9,12 @@ class JsonHal implements OutputAdapterInterface
 {
     public function getName()
     {
-        return 'json-hal';
+        return 'json';
     }
 
     public function isSupported($format)
     {
-        return ($format == 'json-hal');
+        return ($format == 'json');
     }
 
     public function convert(Data $data)

@@ -10,13 +10,13 @@ class JsonHalTest extends \PHPUnit_Framework_TestCase
     public function testName()
     {
         $adapter = new JsonHal();
-        $this->assertEquals($adapter->getName(), 'json-hal');
+        $this->assertEquals($adapter->getName(), 'json');
     }
 
     public function testSupport()
     {
         $adapter = new JsonHal();
-        $this->assertTrue($adapter->isSupported('json-hal'));
+        $this->assertTrue($adapter->isSupported('json'));
         $this->assertFalse($adapter->isSupported('xml'));
     }
 
