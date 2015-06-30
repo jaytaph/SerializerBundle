@@ -53,9 +53,9 @@ class Data
      *
      * @return $this
      */
-    public function addEmbedded($name, Data $data)
+    public function addEmbedded($name, Data $data, $forceArray = false)
     {
-        $this->addEntry('embedded', $name, $data);
+        $this->addEntry('embedded', $name, $data, $forceArray);
 
         return $this;
     }
@@ -87,7 +87,7 @@ class Data
      * @param $property
      * @param $value
      */
-    protected function addEntry($property, $name, $value)
+    protected function addEntry($property, $name, $value, $forceArray = false)
     {
         // Property does not exist, create it first
         if (!isset($this->properties[$property][$name])) {

@@ -37,17 +37,26 @@ class PagerFantaWrapper implements NodeHandler
             $data->addLink('next', $wrapper->getNextPage());
         }
 
-        //$elements = array();
-        $a = $wrapper->getPager()->getCurrentPageResults();
-        $a = array_merge($a, $a);
-        foreach ($a as $element) {
+        $embeds = array();
+        $states = array();
+        foreach ($wrapper->getPager()->getCurrentPageResults() as $element) {
             $embeddedData = $serializer->serialize($element, $context);
+
             if ($embeddedData instanceOf Data) {
-                $data->addEmbedded($wrapper->getElementName(), $embeddedData);
+                $embeds[] = $embeddedData;
             } else {
-                $data->addState($wrapper->getElementName(), $embeddedData);
+                $states[] = $embeddedData;
             }
         }
+
+        // We add them at the end to make sure we are always an array, even when we only have one element.
+        if (count($embeds)) {
+            $data->addEmbedded($wrapper->getElementName(), $embeds);
+        }
+        if (count($states)) {
+            $data->addState($wrapper->getElementName(), $states);
+        }
+
 
         return $data;
     }
