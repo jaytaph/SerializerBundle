@@ -38,7 +38,9 @@ class PagerFantaWrapper implements NodeHandler
         }
 
         //$elements = array();
-        foreach ($wrapper->getPager()->getCurrentPageResults() as $element) {
+        $a = $wrapper->getPager()->getCurrentPageResults();
+        $a = array_merge($a, $a);
+        foreach ($a as $element) {
             $embeddedData = $serializer->serialize($element, $context);
             if ($embeddedData instanceOf Data) {
                 $data->addEmbedded($wrapper->getElementName(), $embeddedData);
