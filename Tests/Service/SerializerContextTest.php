@@ -32,6 +32,10 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
         $context->addGroup('baz');
         $this->assertTrue($context->hasGroup('FOO'));
         $this->assertTrue($context->hasGroup('baz'));
+
+        $context->removeGroup('baz');
+        $this->assertTrue($context->hasGroup('FOO'));
+        $this->assertFalse($context->hasGroup('baz'));
     }
 
     public function testVersion()
@@ -56,5 +60,54 @@ class SerializerContextTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($context->untilVersion('1.2.2'));
         $this->assertFalse($context->untilVersion('1.2.0'));
     }
+
+    public function testStack()
+    {
+        $context = SerializerContext::create();
+        $this->assertFalse($context->has('foo'));
+
+        $context->push('baz');
+        $context->push('bar');
+        $this->assertEquals('bar', $context->pop());
+
+        $context->pop();
+        $context->pop();
+        $context->pop();
+
+        $context->push('foo');
+        $context->push('bar');
+        $context->push('baz');
+        $this->assertTrue($context->has('foo'));
+        $this->assertTrue($context->has('baz'));
+
+        $context->pop();
+        $this->assertFalse($context->has('baz'));
+    }
+
+    public function testRecursive()
+    {
+        $context = SerializerContext::create();
+        $this->assertFalse($context->canRecurse());
+
+        $context->setRecursive(true);
+        $this->assertTrue($context->canRecurse());
+
+        $context->setRecursive(false);
+        $this->assertFalse($context->canRecurse());
+    }
+
+    public function testDepths()
+    {
+        $context = SerializerContext::create();
+        $this->assertEquals(10, $context->getMaximumDepth());
+        $this->assertEquals(0, $context->getCurrentDepth());
+
+        $context->setMaximumDepth(5);
+        $this->assertEquals(5, $context->getMaximumDepth());
+
+        $context->setCurrentDepth(2);
+        $this->assertEquals(2, $context->getCurrentDepth());
+    }
+
 
 }

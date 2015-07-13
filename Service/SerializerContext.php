@@ -64,8 +64,10 @@ class SerializerContext
     public function removeGroup($group)
     {
         $group = strtoupper($group);
-        if (isset($this->groups[$group])) {
-            unset($this->groups[$group]);
+
+        $idx = array_search($group, $this->groups);
+        if ($idx !== false) {
+            unset($this->groups[$idx]);
         }
     }
 
@@ -178,21 +180,38 @@ class SerializerContext
         return $this;
     }
 
+    /**
+     * @param $id
+     */
     public function push($id) {
         array_push($this->embedded_stack, $id);
     }
+
+    /**
+     * @return mixed
+     */
     public function pop() {
         return array_pop($this->embedded_stack);
     }
 
+    /**
+     * @param $id
+     * @return bool
+     */
     public function has($id) {
         return in_array($id, $this->embedded_stack);
     }
 
+    /**
+     * @return bool
+     */
     public function canRecurse() {
         return $this->recursive;
     }
 
+    /**
+     * @param $recursive
+     */
     public function setRecursive($recursive) {
         $this->recursive = $recursive;
     }

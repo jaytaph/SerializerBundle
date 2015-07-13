@@ -4,15 +4,48 @@ namespace Noxlogic\SerializerBundle\Tests\Service\NodeHandler;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Noxlogic\SerializerBundle\Service\Collection\CollectionRouting;
+use Noxlogic\SerializerBundle\Service\Data;
 use Noxlogic\SerializerBundle\Service\NodeHandler\PagerFantaWrapper as PagerFantaWrapperHandler;
 use Noxlogic\SerializerBundle\Service\Serializer;
 use Noxlogic\SerializerBundle\Service\SerializerContext;
 use Noxlogic\SerializerBundle\Service\Collection\PagerFantaWrapper;
+use Noxlogic\SerializerBundle\Service\SerializerMapping;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouterInterface;
+
+class MyClassMapping implements SerializerMapping
+{
+
+    public function mapping($entity, Serializer $serializer, SerializerContext $context)
+    {
+        $data = new Data();
+        $data->addState('name', $entity->getName());
+
+        return $data;
+    }
+
+}
+
+class MyClass
+{
+    protected $name;
+
+    function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+}
 
 class MockRouter implements RouterInterface
 {
@@ -142,5 +175,32 @@ class PagerFantaWrapperTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('elements', $output);
         $this->assertEquals($output['_links']['self']['href'], 'URL://foobar/qf=1&pagina=1&max=10');
         $this->assertEquals($output['_links']['next']['href'], 'URL://foobar/qf=1&pagina=2&max=10');
+    }
+
+    public function testEmbedded()
+    {
+        $context = new SerializerContext();
+
+        $mockRouter = new MockRouter();
+
+        $routingCollection = new CollectionRouting('foobar', array('qf' => 1));
+        $routingCollection->setRouter($mockRouter);
+
+        $c1 = new MyClass('foo');
+        $c2 = new MyClass('bar');
+
+        $pager = new Pagerfanta(new ArrayAdapter(array($c1, $c2)));
+        $pfwc = new PagerFantaWrapper($pager, $routingCollection);
+
+        $node = new PagerFantaWrapperHandler();
+        $data = $node->handle($pfwc, $this->serializer, $context);
+
+        $output = $data->compile();
+
+        $this->assertEquals($output['count'], 2);
+        $this->assertEquals($output['pages'], 1);
+        $this->assertCount(2, $output['_embedded']['elements']);
+        $this->assertEquals('foo', $output['_embedded']['elements'][0]['name']);
+        $this->assertEquals('bar', $output['_embedded']['elements'][1]['name']);
     }
 }

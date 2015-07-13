@@ -11,7 +11,9 @@ class DateTime implements NodeHandler
     {
         // PHP 5.4 compatibility as \DateTimeInterface needs PHP 5.5
         if (!interface_exists('\\DateTimeInterface', false) && !$element instanceof \DateTime) {
+            /** @codeCoverageIgnoreStart */
             return;
+            /** @codeCoverageIgnoreEnd */
         }
 
         if (interface_exists('\\DateTimeInterface', false) && !$element instanceof \DateTimeInterface) {
