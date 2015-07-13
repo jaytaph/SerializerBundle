@@ -53,8 +53,10 @@ class Data
      *
      * @return $this
      */
-    public function addEmbedded($name, Data $data, $forceArray = false)
+    public function addEmbedded($name, Data $data = null, $forceArray = false)
     {
+        if ($data === null) return $this;
+
         $this->addEntry('embedded', $name, $data, $forceArray);
 
         return $this;

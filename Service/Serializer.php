@@ -169,6 +169,22 @@ class Serializer
             $context = SerializerContext::create();
         }
 
+        if (is_object($element)) {
+            $hash = spl_object_hash($element);
+
+            if ($context->has($hash) && ! $context->canRecurse()) {
+                return null;
+            }
+            $context->push($hash);
+        }
+
+        // Increase depth and check nesting
+        if ($context->getCurrentDepth() > $context->getMaximumDepth()) {
+            return null;
+        }
+        $context->setCurrentDepth($context->getCurrentDepth() + 1);
+
+
         $data = null;
 
         // Iterate each handler in priority until one can handle it
@@ -182,10 +198,13 @@ class Serializer
             }
         }
 
+        $context->setCurrentDepth($context->getCurrentDepth() - 1);
+
         if ($data == null) {
             throw new \LogicException('Cannot handle unknown element type');
         }
 
+        $context->pop();
         return $data;
     }
 
